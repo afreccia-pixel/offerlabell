@@ -9,6 +9,15 @@ const CONFIG = {
   imagemCelular: "imagens/celular.webp",
   imagemComputador: "imagens/computador.webp",
   linkAfiliado: "https://myketosana.com/ketosana-pdp-fe-1?aff=grindore&cam=CAMP1",
+  seo: {
+    titulo: "Ketosana | Shopping Guide",
+    descricao: "A checklist for reviewing the Ketosana label, comparing package costs and checking delivery and return terms."
+  },
+  titulosAnuncio: [
+    "Explore Ketosana",
+    "Ketosana Shopping Guide",
+    "Compare Ketosana Options"
+  ],
   textos: {
     "en-US": {
       titulo: "Ketosana",

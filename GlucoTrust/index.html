@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="">
+<html lang="de-DE">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title></title>
-  <meta name="description" content="">
+  <title>GlucoTrust | Kaufratgeber</title>
+  <meta name="description" content="Eine Checkliste zu Etikett, Packungsgrößen, Versand nach Deutschland und Rückgabe bei GlucoTrust.">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <style>
     *,
@@ -229,6 +229,23 @@
         transition: none;
       }
     }
+    .guia-produto {
+      max-width: 42rem;
+      margin: auto;
+      padding: 2rem 1rem;
+      color: #f8fafc;
+      line-height: 1.6;
+    }
+    .guia-produto ul {
+      padding-inline-start: 1.25rem;
+      margin-block: 1rem;
+    }
+    .guia-produto li + li {
+      margin-top: .5rem;
+    }
+    .guia-produto a {
+      color: inherit;
+    }
   </style>
 </head>
 <body>
@@ -271,6 +288,16 @@
     </a>
   </main>
 
+  <section class="guia-produto" aria-labelledby="guia-titulo">
+    <h2 id="guia-titulo">GlucoTrust-Kaufcheckliste</h2>
+    <ul>
+      <li>Prüfen Sie das aktuelle Etikett. Achten Sie auf die Zutatenliste, Mengen pro Portion und Hinweise auf der Verpackung.</li>
+      <li>Vergleichen Sie den Gesamtpreis pro Flasche. Teilen Sie den Endpreis inklusive Versand und möglicher Abgaben durch die Anzahl der Flaschen.</li>
+      <li>Prüfen Sie den Versand nach Deutschland. Klären Sie vor der Bestellung Lieferzeit, Rückgabefrist und Kosten einer Rücksendung.</li>
+    </ul>
+    <p>Bei einem Kauf über den Partnerlink kann ich eine Provision erhalten.</p>
+    <a href="../">Zur Startseite</a>
+  </section>
   <script src="configuracoes.js"></script>
   <script>
     (function () {
@@ -322,11 +349,12 @@
       }
 
       document.documentElement.lang = idioma;
-      document.title = titulo || produto;
+      var seo = cfg.seo || {};
+      document.title = lerTexto(seo.titulo, titulo || produto, document.title);
 
       var metaDescricao = document.querySelector('meta[name="description"]');
       if (metaDescricao) {
-        metaDescricao.setAttribute("content", texto);
+        metaDescricao.setAttribute("content", lerTexto(seo.descricao, texto, metaDescricao.content));
       }
 
       var linkEl = document.getElementById("link-oferta");

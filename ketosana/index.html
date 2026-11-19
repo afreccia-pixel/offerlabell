@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="">
+<html lang="en-US">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title></title>
-  <meta name="description" content="">
+  <title>Ketosana | Shopping Guide</title>
+  <meta name="description" content="A checklist for reviewing the Ketosana label, comparing package costs and checking delivery and return terms.">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <style>
     *,
@@ -229,6 +229,23 @@
         transition: none;
       }
     }
+    .guia-produto {
+      max-width: 42rem;
+      margin: auto;
+      padding: 2rem 1rem;
+      color: #f8fafc;
+      line-height: 1.6;
+    }
+    .guia-produto ul {
+      padding-inline-start: 1.25rem;
+      margin-block: 1rem;
+    }
+    .guia-produto li + li {
+      margin-top: .5rem;
+    }
+    .guia-produto a {
+      color: inherit;
+    }
   </style>
 </head>
 <body>
@@ -271,6 +288,16 @@
     </a>
   </main>
 
+  <section class="guia-produto" aria-labelledby="guia-titulo">
+    <h2 id="guia-titulo">Ketosana shopping checklist</h2>
+    <ul>
+      <li>Check the label and serving size. Compare the ingredients and quantities on the seller’s current label before choosing a bundle.</li>
+      <li>Compare the total cost per bottle. Divide the full checkout total, including shipping and taxes, by the number of bottles.</li>
+      <li>Check delivery and returns. Confirm shipping to your address and check the return deadline, eligibility for opened bottles and who pays return postage.</li>
+    </ul>
+    <p>I may earn a commission if you buy through the affiliate link.</p>
+    <a href="../">Back to the shopping guide</a>
+  </section>
   <script src="configuracoes.js"></script>
   <script>
     (function () {
@@ -322,11 +349,12 @@
       }
 
       document.documentElement.lang = idioma;
-      document.title = titulo || produto;
+      var seo = cfg.seo || {};
+      document.title = lerTexto(seo.titulo, titulo || produto, document.title);
 
       var metaDescricao = document.querySelector('meta[name="description"]');
       if (metaDescricao) {
-        metaDescricao.setAttribute("content", texto);
+        metaDescricao.setAttribute("content", lerTexto(seo.descricao, texto, metaDescricao.content));
       }
 
       var linkEl = document.getElementById("link-oferta");

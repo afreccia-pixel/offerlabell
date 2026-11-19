@@ -4,6 +4,15 @@ const CONFIG = {
   imagemCelular: "imagens/celular.webp",
   imagemComputador: "imagens/computador.webp",
   linkAfiliado: "https://getglucotrust.co/#aff=grindore",
+  seo: {
+    titulo: "GlucoTrust | Kaufratgeber",
+    descricao: "Eine Checkliste zu Etikett, Packungsgrößen, Versand nach Deutschland und Rückgabe bei GlucoTrust."
+  },
+  titulosAnuncio: [
+    "GlucoTrust ansehen",
+    "GlucoTrust Kaufratgeber",
+    "GlucoTrust vergleichen"
+  ],
   textos: {
     "de-DE": {
       titulo: "GlucoTrust",
