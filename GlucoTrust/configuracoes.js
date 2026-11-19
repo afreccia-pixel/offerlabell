@@ -1,26 +1,5 @@
 const CONFIG = {
   produto: "GlucoTrust",
-  idioma: "en-US",
-  imagemCelular: "imagens/celular.webp",
-  imagemComputador: "imagens/computador.webp",
-  linkAfiliado: "https://getglucotrust.co/#aff=grindore",
-  textos: {
-    "en-US": {
-      titulo: "Ketosana",
-      texto: "Review the product details and available purchase options.",
-      textoBotao: "View Ketosana Offer",
-      avisoAfiliado: "I may earn a commission if you buy through this link.",
-      cookies: {
-        titulo: "Cookie Settings",
-        texto: "We use cookies and similar technologies to help personalize content, tailor and measure ads, and provide a better experience. By clicking accept, you agree to this as described in our Cookie Policy.",
-        aceitar: "Yes, I accept",
-        recusar: "No, I do not accept",
-        fechar: "Close",
-        gerenciar: "Cookie Settings"
-      }
-    },
-    {
-  produto: "GlucoTrust",
   idioma: "de-DE",
   imagemCelular: "imagens/celular.webp",
   imagemComputador: "imagens/computador.webp",
@@ -40,8 +19,7 @@ const CONFIG = {
         gerenciar: "Cookie-Einstellungen"
       }
     }
-  }
-}
+  },
   cookies: {
     ativo: true
   },
