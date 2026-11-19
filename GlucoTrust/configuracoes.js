@@ -1,14 +1,9 @@
-/**
- * Configurações da campanha.
- * Para criar outra presell, copie esta pasta, renomeie-a,
- * edite os valores abaixo e substitua as imagens em imagens/.
- */
 const CONFIG = {
-  produto: "Ketosana",
+  produto: "GlucoTrust",
   idioma: "en-US",
   imagemCelular: "imagens/celular.webp",
   imagemComputador: "imagens/computador.webp",
-  linkAfiliado: "https://myketosana.com/ketosana-pdp-fe-1?aff=grindore&cam=CAMP1",
+  linkAfiliado: "https://getglucotrust.co/#aff=grindore",
   textos: {
     "en-US": {
       titulo: "Ketosana",
@@ -24,35 +19,29 @@ const CONFIG = {
         gerenciar: "Cookie Settings"
       }
     },
-    "pt-BR": {
-      titulo: "Ketosana",
-      texto: "Confira os detalhes do produto e as opções de compra disponíveis.",
-      textoBotao: "Ver oferta Ketosana",
-      avisoAfiliado: "Posso receber uma comissão se você comprar por este link.",
+    {
+  produto: "GlucoTrust",
+  idioma: "de-DE",
+  imagemCelular: "imagens/celular.webp",
+  imagemComputador: "imagens/computador.webp",
+  linkAfiliado: "https://getglucotrust.co/#aff=grindore",
+  textos: {
+    "de-DE": {
+      titulo: "GlucoTrust",
+      texto: "Sehen Sie sich die Produktdetails und die verfügbaren Kaufoptionen an.",
+      textoBotao: "GlucoTrust-Angebot ansehen",
+      avisoAfiliado: "Wenn Sie über diesen Link kaufen, erhalte ich möglicherweise eine Provision.",
       cookies: {
-        titulo: "Configurações de Cookies",
-        texto: "Usamos cookies e tecnologias semelhantes para personalizar conteúdo, adaptar e medir anúncios e oferecer uma melhor experiência. Ao clicar em aceitar, você concorda com isso conforme descrito em nossa Política de Cookies.",
-        aceitar: "Sim, aceito",
-        recusar: "Não aceito",
-        fechar: "Fechar",
-        gerenciar: "Configurações de Cookies"
-      }
-    },
-    "es-ES": {
-      titulo: "Ketosana",
-      texto: "Revisa los detalles del producto y las opciones de compra disponibles.",
-      textoBotao: "Ver oferta de Ketosana",
-      avisoAfiliado: "Puedo recibir una comisión si compras mediante este enlace.",
-      cookies: {
-        titulo: "Configuración de Cookies",
-        texto: "Usamos cookies y tecnologías similares para personalizar el contenido, adaptar y medir anuncios y ofrecer una mejor experiencia. Al hacer clic en aceptar, aceptas esto según nuestra Política de Cookies.",
-        aceitar: "Sí, acepto",
-        recusar: "No acepto",
-        fechar: "Cerrar",
-        gerenciar: "Configuración de Cookies"
+        titulo: "Cookie-Einstellungen",
+        texto: "Wir verwenden Cookies und ähnliche Technologien, um Inhalte zu personalisieren, Werbung auf Sie abzustimmen, ihre Wirkung zu messen und Ihr Nutzungserlebnis zu verbessern. Wenn Sie auf „Ja, ich stimme zu“ klicken, willigen Sie in die in unserer Cookie-Richtlinie beschriebene Nutzung ein.",
+        aceitar: "Ja, ich stimme zu",
+        recusar: "Nein, ich lehne ab",
+        fechar: "Schließen",
+        gerenciar: "Cookie-Einstellungen"
       }
     }
-  },
+  }
+}
   cookies: {
     ativo: true
   },
