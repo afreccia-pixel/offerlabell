@@ -1,0 +1,668 @@
+<!doctype html>
+<html lang="">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title></title>
+  <meta name="description" content="">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      height: 100%;
+      background-color: #0e141b;
+      color: #f8fafc;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    .presell {
+      position: relative;
+      min-height: 100vh;
+      min-height: 100svh;
+      width: 100%;
+      display: flex;
+      background-color: #0e141b;
+      background-image:
+        radial-gradient(circle at 50% 30%, rgba(34, 62, 54, 0.58) 0%, rgba(14, 20, 27, 0.96) 72%);
+      overflow: hidden;
+    }
+
+    .oferta-link {
+      position: relative;
+      display: flex;
+      flex: 1 1 auto;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 100vh;
+      min-height: 100svh;
+      padding: clamp(1.5rem, 4vw, 3rem) 1.25rem;
+      color: inherit;
+      text-decoration: none;
+      cursor: pointer;
+      isolation: isolate;
+      outline: none;
+    }
+
+    .oferta-link:focus-visible {
+      outline: 3px solid #f59e0b;
+      outline-offset: -6px;
+    }
+
+    .fundo-midia {
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      display: block;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .fundo-imagem {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      color: transparent;
+    }
+
+    .fundo-imagem[hidden] {
+      display: none;
+    }
+
+    .camada-escura {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 50% 48%, rgba(8, 13, 19, 0.42) 0%, rgba(8, 13, 19, 0.72) 100%),
+        linear-gradient(180deg, rgba(8, 13, 19, 0.48) 0%, rgba(8, 13, 19, 0.68) 55%, rgba(8, 13, 19, 0.84) 100%);
+    }
+
+    .conteudo {
+      width: 100%;
+      max-width: 34rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 1.15rem;
+      padding: clamp(1.75rem, 4vw, 2.75rem) clamp(1.25rem, 3.5vw, 2.25rem);
+      border-radius: 1rem;
+      background-color: rgba(11, 17, 24, 0.44);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+
+    .titulo {
+      font-size: clamp(2rem, 5vw, 3.25rem);
+      font-weight: 700;
+      line-height: 1.12;
+      letter-spacing: -0.025em;
+      color: #ffffff;
+      text-wrap: balance;
+    }
+
+    .texto {
+      max-width: 28rem;
+      font-size: clamp(1rem, 2.2vw, 1.1875rem);
+      font-weight: 400;
+      line-height: 1.55;
+      color: rgba(241, 245, 249, 0.92);
+      text-wrap: balance;
+    }
+
+    .botao {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      min-height: 3.25rem;
+      min-width: 13.5rem;
+      margin-top: 0.35rem;
+      padding: 0.9rem 2rem;
+      border-radius: 0.625rem;
+      background-color: #16a34a;
+      color: #ffffff;
+      font-size: 1.0625rem;
+      font-weight: 600;
+      line-height: 1.2;
+      letter-spacing: 0.01em;
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.32);
+      transition: background-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+    }
+
+    .oferta-link:hover .botao {
+      background-color: #15803d;
+      transform: translateY(-1px);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .oferta-link:active .botao {
+      transform: translateY(0);
+    }
+
+    .oferta-link:focus-visible .botao {
+      box-shadow: 0 0 0 3px #0e141b, 0 0 0 6px #f59e0b;
+    }
+
+    .botao-seta {
+      display: inline-block;
+      transition: transform 160ms ease;
+    }
+
+    .oferta-link:hover .botao-seta {
+      transform: translateX(3px);
+    }
+
+    .aviso {
+      max-width: 26rem;
+      margin-top: 0.15rem;
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      color: rgba(226, 232, 240, 0.84);
+    }
+
+    .privacidade-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      background-color: rgba(8, 13, 19, 0.46);
+    }
+
+    .privacidade-backdrop[hidden] {
+      display: none;
+    }
+
+    .privacidade-card {
+      position: relative;
+      width: 100%;
+      max-width: 30.5rem;
+      padding: 2.15rem 1.75rem 1.75rem;
+      border-radius: 1rem;
+      background-color: #ffffff;
+      color: #111111;
+      text-align: center;
+      box-shadow: 0 22px 54px rgba(0, 0, 0, 0.3);
+    }
+
+    .privacidade-fechar {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      border: none;
+      border-radius: 999px;
+      background-color: transparent;
+      color: #262626;
+      font-size: 1.25rem;
+      line-height: 1;
+      cursor: pointer;
+      transition: background-color 140ms ease, color 140ms ease;
+    }
+
+    .privacidade-fechar:hover {
+      background-color: #f1f5f9;
+      color: #000000;
+    }
+
+    .privacidade-fechar:focus-visible {
+      outline: 2px solid #000000;
+      outline-offset: 2px;
+    }
+
+    .privacidade-titulo {
+      font-size: clamp(1.5rem, 4vw, 1.85rem);
+      font-weight: 700;
+      line-height: 1.18;
+      letter-spacing: -0.02em;
+      color: #000000;
+      text-wrap: balance;
+    }
+
+    .privacidade-texto {
+      max-width: 25rem;
+      margin: 0.9rem auto 0;
+      font-size: 0.9375rem;
+      font-weight: 400;
+      line-height: 1.48;
+      color: #262626;
+    }
+
+    .privacidade-acoes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-top: 1.65rem;
+    }
+
+    .privacidade-btn {
+      appearance: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 3.375rem;
+      padding: 0.85rem 1rem;
+      border-radius: 0.5rem;
+      font: inherit;
+      font-size: 0.975rem;
+      font-weight: 700;
+      line-height: 1.2;
+      cursor: pointer;
+      transition: background-color 140ms ease, border-color 140ms ease, opacity 140ms ease;
+    }
+
+    .privacidade-btn:focus-visible {
+      outline: 2px solid #f59e0b;
+      outline-offset: 2px;
+    }
+
+    .privacidade-btn--aceitar {
+      background-color: #000000;
+      border: 1.5px solid #000000;
+      color: #ffffff;
+    }
+
+    .privacidade-btn--aceitar:hover {
+      background-color: #1f1f1f;
+      border-color: #1f1f1f;
+    }
+
+    .privacidade-btn--recusar {
+      background-color: #eef1f0;
+      border: 1.5px solid #262626;
+      color: #000000;
+    }
+
+    .privacidade-btn--recusar:hover {
+      background-color: #e2e7e5;
+    }
+
+    @media (max-width: 380px) {
+      .privacidade-acoes {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .botao,
+      .botao-seta,
+      .privacidade-btn,
+      .privacidade-fechar {
+        transition: none;
+      }
+
+      .oferta-link:hover .botao,
+      .oferta-link:hover .botao-seta {
+        transform: none;
+      }
+    }
+  </style>
+  <script src="configuracoes.js"></script>
+</head>
+<body>
+  <main class="presell">
+    <a
+      id="link-oferta"
+      class="oferta-link"
+      href="#"
+      rel="sponsored noopener"
+    >
+      <picture class="fundo-midia">
+        <source
+          id="fonte-computador"
+          media="(min-width: 768px)"
+          srcset="imagens/computador.webp"
+          type="image/webp"
+        >
+        <img
+          id="imagem-fundo"
+          class="fundo-imagem"
+          src="imagens/celular.webp"
+          alt=""
+          loading="eager"
+          decoding="async"
+          fetchpriority="high"
+        >
+      </picture>
+
+      <span class="camada-escura" aria-hidden="true"></span>
+
+      <div class="conteudo">
+        <h1 id="titulo-oferta" class="titulo"></h1>
+        <p id="texto-oferta" class="texto"></p>
+        <span class="botao">
+          <span id="texto-botao"></span>
+          <span class="botao-seta" aria-hidden="true">&#8594;</span>
+        </span>
+        <p id="aviso-afiliado" class="aviso"></p>
+      </div>
+    </a>
+  </main>
+
+  <div
+    id="barra-privacidade"
+    class="privacidade-backdrop"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="titulo-privacidade"
+    aria-describedby="texto-privacidade"
+    hidden
+  >
+    <div class="privacidade-card">
+      <button id="btn-privacidade-fechar" type="button" class="privacidade-fechar" aria-label="Close">
+        <span aria-hidden="true">&#215;</span>
+      </button>
+      <h2 id="titulo-privacidade" class="privacidade-titulo"></h2>
+      <p id="texto-privacidade" class="privacidade-texto"></p>
+      <div class="privacidade-acoes">
+        <button id="btn-privacidade-aceitar" type="button" class="privacidade-btn privacidade-btn--aceitar"></button>
+        <button id="btn-privacidade-recusar" type="button" class="privacidade-btn privacidade-btn--recusar"></button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      var cfg = typeof CONFIG !== "undefined" && CONFIG ? CONFIG : {};
+      var adsCfg = cfg.googleAds && typeof cfg.googleAds === "object" ? cfg.googleAds : {};
+      var privCfg = cfg.privacidade && typeof cfg.privacidade === "object" ? cfg.privacidade : {};
+
+      var idioma = typeof cfg.idioma === "string" && cfg.idioma.trim() ? cfg.idioma.trim() : "en-US";
+      var produto = typeof cfg.produto === "string" ? cfg.produto.trim() : "";
+      var titulo = typeof cfg.titulo === "string" && cfg.titulo.trim() ? cfg.titulo.trim() : produto;
+      var texto = typeof cfg.texto === "string" ? cfg.texto.trim() : "";
+      var textoBotao = typeof cfg.textoBotao === "string" ? cfg.textoBotao.trim() : "";
+      var avisoAfiliado = typeof cfg.avisoAfiliado === "string" ? cfg.avisoAfiliado.trim() : "";
+      var imagemCelular = typeof cfg.imagemCelular === "string" && cfg.imagemCelular.trim() ? cfg.imagemCelular.trim() : "imagens/celular.webp";
+      var imagemComputador = typeof cfg.imagemComputador === "string" && cfg.imagemComputador.trim() ? cfg.imagemComputador.trim() : "imagens/computador.webp";
+      var linkAfiliado = typeof cfg.linkAfiliado === "string" ? cfg.linkAfiliado.trim() : "";
+
+      var adsAtivo = adsCfg.ativo === true;
+      var adsId = typeof adsCfg.id === "string" ? adsCfg.id.trim() : "";
+      var adsRotulo = typeof adsCfg.rotuloConversao === "string" ? adsCfg.rotuloConversao.trim() : "";
+      var tempoLimiteRaw = Number(adsCfg.tempoLimiteMs);
+      var tempoLimiteMs = tempoLimiteRaw > 0 ? Math.min(Math.max(tempoLimiteRaw, 150), 1500) : 450;
+
+      var CHAVE_PRIVACIDADE = "presell_ads_privacidade_v1";
+      var gtagCarregado = false;
+      var navegando = false;
+
+      // Idioma, título e descrição vindos do configuracoes.js
+      document.documentElement.lang = idioma;
+      document.title = titulo || produto;
+
+      var metaDescricao = document.querySelector('meta[name="description"]');
+      if (metaDescricao) {
+        metaDescricao.setAttribute("content", texto);
+      }
+
+      // Preenche a página com os dados do configuracoes.js
+      var linkEl = document.getElementById("link-oferta");
+      var fonteComputadorEl = document.getElementById("fonte-computador");
+      var imagemFundoEl = document.getElementById("imagem-fundo");
+      var tituloEl = document.getElementById("titulo-oferta");
+      var textoEl = document.getElementById("texto-oferta");
+      var textoBotaoEl = document.getElementById("texto-botao");
+      var avisoEl = document.getElementById("aviso-afiliado");
+
+      if (tituloEl) {
+        tituloEl.textContent = titulo;
+        tituloEl.hidden = !titulo;
+      }
+
+      if (textoEl) {
+        textoEl.textContent = texto;
+        textoEl.hidden = !texto;
+      }
+
+      if (textoBotaoEl) {
+        textoBotaoEl.textContent = textoBotao;
+      }
+
+      if (avisoEl) {
+        avisoEl.textContent = avisoAfiliado;
+        avisoEl.hidden = !avisoAfiliado;
+      }
+
+      if (linkEl && linkAfiliado) {
+        linkEl.setAttribute("href", linkAfiliado);
+      }
+
+      // Só altera atributos de imagem se diferentes do padrão, evitando download duplicado
+      if (fonteComputadorEl && fonteComputadorEl.getAttribute("srcset") !== imagemComputador) {
+        fonteComputadorEl.setAttribute("srcset", imagemComputador);
+      }
+
+      if (imagemFundoEl) {
+        imagemFundoEl.addEventListener("error", function () {
+          imagemFundoEl.hidden = true;
+        });
+
+        if (imagemFundoEl.getAttribute("src") !== imagemCelular) {
+          imagemFundoEl.setAttribute("src", imagemCelular);
+        }
+
+        if (imagemFundoEl.complete && imagemFundoEl.naturalWidth === 0) {
+          imagemFundoEl.hidden = true;
+        }
+      }
+
+      // Preferências de privacidade (controles opcionais fora da área clicável da oferta)
+      function lerPreferenciaSalva() {
+        try {
+          return window.localStorage.getItem(CHAVE_PRIVACIDADE);
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function salvarPreferencia(valor) {
+        try {
+          window.localStorage.setItem(CHAVE_PRIVACIDADE, valor);
+        } catch (e) {
+          // Ignora indisponibilidade de localStorage
+        }
+      }
+
+      function privacidadePermiteAds() {
+        if (privCfg.permitirGoogleAds === false) {
+          return false;
+        }
+        if (privCfg.exibirControles === true) {
+          return lerPreferenciaSalva() === "granted";
+        }
+        return true;
+      }
+
+      function adsConfigurado() {
+        return Boolean(adsAtivo && adsId && adsRotulo);
+      }
+
+      function rastreamentoPermitido() {
+        return adsConfigurado() && privacidadePermiteAds();
+      }
+
+      // Carregamento assíncrono do Google Ads (gtag.js)
+      function carregarGoogleAds() {
+        if (gtagCarregado || !rastreamentoPermitido()) {
+          return;
+        }
+
+        gtagCarregado = true;
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function () {
+          window.dataLayer.push(arguments);
+        };
+
+        window.gtag("js", new Date());
+        window.gtag("config", adsId);
+
+        var script = document.createElement("script");
+        script.async = true;
+        script.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(adsId);
+        document.head.appendChild(script);
+      }
+
+      var barraPrivacidade = document.getElementById("barra-privacidade");
+      if (barraPrivacidade && privCfg.exibirControles === true) {
+        var salvo = lerPreferenciaSalva();
+        if (salvo !== "granted" && salvo !== "denied") {
+          var tituloPriv = document.getElementById("titulo-privacidade");
+          var textoPriv = document.getElementById("texto-privacidade");
+          var btnAceitar = document.getElementById("btn-privacidade-aceitar");
+          var btnRecusar = document.getElementById("btn-privacidade-recusar");
+          var btnFechar = document.getElementById("btn-privacidade-fechar");
+
+          if (tituloPriv) tituloPriv.textContent = privCfg.titulo || "";
+          if (textoPriv) textoPriv.textContent = privCfg.texto || "";
+          if (btnAceitar) btnAceitar.textContent = privCfg.botaoPermitir || "";
+          if (btnRecusar) btnRecusar.textContent = privCfg.botaoRecusar || "";
+          if (btnFechar && privCfg.rotuloFechar) {
+            btnFechar.setAttribute("aria-label", privCfg.rotuloFechar);
+          }
+
+          barraPrivacidade.hidden = false;
+
+          function fecharComPreferencia(valor) {
+            salvarPreferencia(valor);
+            barraPrivacidade.hidden = true;
+            if (valor === "granted") {
+              carregarGoogleAds();
+            }
+          }
+
+          if (btnAceitar) {
+            btnAceitar.addEventListener("click", function () {
+              fecharComPreferencia("granted");
+            });
+          }
+
+          if (btnRecusar) {
+            btnRecusar.addEventListener("click", function () {
+              fecharComPreferencia("denied");
+            });
+          }
+
+          if (btnFechar) {
+            btnFechar.addEventListener("click", function () {
+              fecharComPreferencia("denied");
+            });
+          }
+
+          document.addEventListener("keydown", function onKeyDown(e) {
+            if (e.key === "Escape" && !barraPrivacidade.hidden) {
+              fecharComPreferencia("denied");
+              document.removeEventListener("keydown", onKeyDown);
+            }
+          });
+        }
+      }
+
+      carregarGoogleAds();
+
+      window.addEventListener("pageshow", function () {
+        navegando = false;
+      });
+
+      // Dispara um único evento conversion ("Clique para a oferta") por clique válido
+      if (linkEl) {
+        linkEl.addEventListener("click", function (event) {
+          var destino = linkEl.getAttribute("href");
+          if (!destino || destino === "#") {
+            event.preventDefault();
+            return;
+          }
+
+          if (!rastreamentoPermitido()) {
+            return;
+          }
+
+          var sendTo = adsId + "/" + adsRotulo;
+          var aberturaNovaAba =
+            event.defaultPrevented ||
+            event.button !== 0 ||
+            event.metaKey ||
+            event.ctrlKey ||
+            event.shiftKey ||
+            event.altKey;
+
+          if (aberturaNovaAba) {
+            if (typeof window.gtag === "function") {
+              try {
+                window.gtag("event", "conversion", {
+                  send_to: sendTo,
+                  transport_type: "beacon"
+                });
+              } catch (e) {
+                // Mantém abertura nativa em nova aba
+              }
+            }
+            return;
+          }
+
+          event.preventDefault();
+
+          if (navegando) {
+            return;
+          }
+          navegando = true;
+
+          var redirecionou = false;
+          var temporizador = null;
+
+          function seguirParaOferta() {
+            if (redirecionou) return;
+            redirecionou = true;
+            if (temporizador) {
+              window.clearTimeout(temporizador);
+            }
+            window.location.assign(destino);
+          }
+
+          temporizador = window.setTimeout(seguirParaOferta, tempoLimiteMs);
+
+          if (typeof window.gtag === "function") {
+            try {
+              window.gtag("event", "conversion", {
+                send_to: sendTo,
+                event_callback: seguirParaOferta,
+                event_timeout: tempoLimiteMs
+              });
+            } catch (e) {
+              seguirParaOferta();
+            }
+          } else {
+            seguirParaOferta();
+          }
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
