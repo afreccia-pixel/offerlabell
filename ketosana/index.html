@@ -383,38 +383,24 @@
 
       <span class="camada-escura" aria-hidden="true"></span>
 
-      <div class="cartao">
-        <h1 id="titulo-oferta" class="titulo"></h1>
-        <p id="texto-oferta" class="texto"></p>
-        <span id="texto-botao" class="botao"></span>
-        <p id="aviso-afiliado" class="aviso"></p>
-      </div>
+      <div
+          id="modal-cookies"
+          class="cookies-backdrop"
+        >
+          <div class="cookies-card">
+            <span id="btn-cookies-fechar" class="cookies-fechar" aria-hidden="true">
+              <span aria-hidden="true">&#215;</span>
+            </span>
+            <h2 id="titulo-cookies" class="cookies-titulo"></h2>
+            <p id="texto-cookies" class="cookies-texto"></p>
+            <div class="cookies-acoes">
+              <span id="btn-cookies-aceitar" class="cookies-btn cookies-btn--aceitar"></span>
+              <span id="btn-cookies-recusar" class="cookies-btn cookies-btn--recusar"></span>
+            </div>
+          </div>
+        </div>
     </a>
   </main>
-
-  <button id="btn-abrir-cookies" type="button" class="cookies-gatilho" hidden></button>
-
-  <div
-    id="modal-cookies"
-    class="cookies-backdrop"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="titulo-cookies"
-    aria-describedby="texto-cookies"
-    hidden
-  >
-    <div class="cookies-card">
-      <button id="btn-cookies-fechar" type="button" class="cookies-fechar" aria-label="">
-        <span aria-hidden="true">&#215;</span>
-      </button>
-      <h2 id="titulo-cookies" class="cookies-titulo"></h2>
-      <p id="texto-cookies" class="cookies-texto"></p>
-      <div class="cookies-acoes">
-        <button id="btn-cookies-aceitar" type="button" class="cookies-btn cookies-btn--aceitar"></button>
-        <button id="btn-cookies-recusar" type="button" class="cookies-btn cookies-btn--recusar"></button>
-      </div>
-    </div>
-  </div>
 
   <script>
     (function () {
@@ -433,13 +419,10 @@
       var produto = typeof cfg.produto === "string" ? cfg.produto.trim() : "";
       var titulo = lerTexto(cfg.titulo, pacoteIdioma.titulo, produto);
       var texto = lerTexto(cfg.texto, pacoteIdioma.texto, "");
-      var textoBotao = lerTexto(cfg.textoBotao, pacoteIdioma.textoBotao, "");
-      var avisoAfiliado = lerTexto(cfg.avisoAfiliado, pacoteIdioma.avisoAfiliado, "");
       var imagemCelular = lerTexto(cfg.imagemCelular, "", "imagens/celular.webp");
       var imagemComputador = lerTexto(cfg.imagemComputador, "", "imagens/computador.webp");
       var linkAfiliado = lerTexto(cfg.linkAfiliado, "", "");
 
-      var cookiesAtivo = cookiesCfg.ativo !== false;
       var adsAtivo = adsCfg.ativo === true;
       var adsId = typeof adsCfg.id === "string" ? adsCfg.id.trim() : "";
       var adsRotulo = typeof adsCfg.rotuloConversao === "string" ? adsCfg.rotuloConversao.trim() : "";
@@ -468,14 +451,6 @@
         }
       }
 
-      function salvarConsentimento(valor) {
-        try {
-          window.localStorage.setItem(CHAVE_CONSENTIMENTO, valor);
-        } catch (e) {
-          // Ignora indisponibilidade de localStorage
-        }
-      }
-
       document.documentElement.lang = idioma;
       document.title = titulo || produto;
 
@@ -487,31 +462,6 @@
       var linkEl = document.getElementById("link-oferta");
       var fonteComputadorEl = document.getElementById("fonte-computador");
       var imagemFundoEl = document.getElementById("imagem-fundo");
-      var tituloEl = document.getElementById("titulo-oferta");
-      var textoEl = document.getElementById("texto-oferta");
-      var textoBotaoEl = document.getElementById("texto-botao");
-      var avisoEl = document.getElementById("aviso-afiliado");
-
-      if (tituloEl) {
-        tituloEl.textContent = titulo;
-        tituloEl.hidden = !titulo;
-      }
-
-      if (textoEl) {
-        textoEl.textContent = texto;
-        textoEl.hidden = !texto;
-      }
-
-      if (textoBotaoEl) {
-        textoBotaoEl.textContent = textoBotao;
-        textoBotaoEl.hidden = !textoBotao;
-      }
-
-      if (avisoEl) {
-        avisoEl.textContent = avisoAfiliado;
-        avisoEl.hidden = !avisoAfiliado;
-      }
-
       if (linkEl && linkAfiliado) {
         linkEl.setAttribute("href", linkAfiliado);
       }
@@ -535,10 +485,7 @@
       }
 
       function consentimentoAutorizado() {
-        if (!cookiesAtivo) {
-          return adsCfg.autorizado !== false;
-        }
-        return lerConsentimento() === "granted";
+        return adsCfg.autorizado === true || lerConsentimento() === "granted";
       }
 
       function rastreamentoPermitido() {
@@ -565,86 +512,16 @@
         document.head.appendChild(script);
       }
 
-      // Diálogo real de Cookie Settings (separado do link da oferta)
-      var modalCookies = document.getElementById("modal-cookies");
-      var btnAbrirCookies = document.getElementById("btn-abrir-cookies");
-      var tituloCookiesEl = document.getElementById("titulo-cookies");
-      var textoCookiesEl = document.getElementById("texto-cookies");
-      var btnAceitarEl = document.getElementById("btn-cookies-aceitar");
-      var btnRecusarEl = document.getElementById("btn-cookies-recusar");
-      var btnFecharEl = document.getElementById("btn-cookies-fechar");
-
-      if (cookiesAtivo && modalCookies) {
-        var cookieTitulo = lerTexto(cookiesCfg.titulo, textosCookies.titulo, "Cookie Settings");
-        var cookieTexto = lerTexto(cookiesCfg.texto, textosCookies.texto, "");
-        var cookieAceitar = lerTexto(cookiesCfg.aceitar, textosCookies.aceitar, "Yes, I accept");
-        var cookieRecusar = lerTexto(cookiesCfg.recusar, textosCookies.recusar, "No, I do not accept");
-        var cookieFechar = lerTexto(cookiesCfg.fechar, textosCookies.fechar, "Close");
-        var cookieGerenciar = lerTexto(cookiesCfg.gerenciar, textosCookies.gerenciar, cookieTitulo);
-
-        if (tituloCookiesEl) tituloCookiesEl.textContent = cookieTitulo;
-        if (textoCookiesEl) textoCookiesEl.textContent = cookieTexto;
-        if (btnAceitarEl) btnAceitarEl.textContent = cookieAceitar;
-        if (btnRecusarEl) btnRecusarEl.textContent = cookieRecusar;
-        if (btnFecharEl) btnFecharEl.setAttribute("aria-label", cookieFechar);
-        if (btnAbrirCookies) btnAbrirCookies.textContent = cookieGerenciar;
-
-        function abrirModalCookies() {
-          modalCookies.hidden = false;
-          if (btnAbrirCookies) btnAbrirCookies.hidden = true;
-          if (btnAceitarEl) btnAceitarEl.focus();
-        }
-
-        function fecharModalCookies(escolha) {
-          if (escolha === "granted" || escolha === "denied") {
-            salvarConsentimento(escolha);
-          }
-          modalCookies.hidden = true;
-          if (btnAbrirCookies) btnAbrirCookies.hidden = false;
-          if (escolha === "granted") {
-            carregarGoogleAds();
-          }
-        }
-
-        var escolhaSalva = lerConsentimento();
-        if (escolhaSalva === "granted" || escolhaSalva === "denied") {
-          modalCookies.hidden = true;
-          if (btnAbrirCookies) btnAbrirCookies.hidden = false;
-        } else {
-          modalCookies.hidden = false;
-          if (btnAbrirCookies) btnAbrirCookies.hidden = true;
-        }
-
-        if (btnAceitarEl) {
-          btnAceitarEl.addEventListener("click", function () {
-            fecharModalCookies("granted");
-          });
-        }
-
-        if (btnRecusarEl) {
-          btnRecusarEl.addEventListener("click", function () {
-            fecharModalCookies("denied");
-          });
-        }
-
-        if (btnFecharEl) {
-          btnFecharEl.addEventListener("click", function () {
-            fecharModalCookies("denied");
-          });
-        }
-
-        if (btnAbrirCookies) {
-          btnAbrirCookies.addEventListener("click", function () {
-            abrirModalCookies();
-          });
-        }
-
-        document.addEventListener("keydown", function (e) {
-          if (e.key === "Escape" && !modalCookies.hidden) {
-            fecharModalCookies("denied");
-          }
-        });
-      }
+      // O cartão inteiro faz parte do link e não grava preferências.
+      document.getElementById("titulo-cookies").textContent =
+        lerTexto(cookiesCfg.titulo, textosCookies.titulo, "Cookie Settings");
+      document.getElementById("texto-cookies").textContent =
+        lerTexto(cookiesCfg.texto, textosCookies.texto, "");
+      document.getElementById("btn-cookies-aceitar").textContent =
+        lerTexto(cookiesCfg.aceitar, textosCookies.aceitar, "Yes, I accept");
+      document.getElementById("btn-cookies-recusar").textContent =
+        lerTexto(cookiesCfg.recusar, textosCookies.recusar, "No, I do not accept");
+      linkEl.setAttribute("aria-label", lerTexto(cfg.textoBotao, pacoteIdioma.textoBotao, produto));
 
       carregarGoogleAds();
 
