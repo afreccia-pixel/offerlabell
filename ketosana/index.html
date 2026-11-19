@@ -19,7 +19,7 @@
     body {
       height: 100%;
       background-color: #0e141b;
-      color: #f8fafc;
+      color: #111111;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
       text-rendering: optimizeLegibility;
@@ -46,7 +46,7 @@
       width: 100%;
       min-height: 100vh;
       min-height: 100svh;
-      padding: clamp(1.5rem, 4vw, 3rem) 1.25rem;
+      padding: clamp(1.25rem, 4vw, 3rem) 1rem 4.25rem;
       color: inherit;
       text-decoration: none;
       cursor: pointer;
@@ -88,41 +88,45 @@
       z-index: -1;
       pointer-events: none;
       background:
-        radial-gradient(circle at 50% 48%, rgba(8, 13, 19, 0.42) 0%, rgba(8, 13, 19, 0.72) 100%),
-        linear-gradient(180deg, rgba(8, 13, 19, 0.48) 0%, rgba(8, 13, 19, 0.68) 55%, rgba(8, 13, 19, 0.84) 100%);
+        radial-gradient(circle at 50% 48%, rgba(8, 13, 19, 0.34) 0%, rgba(8, 13, 19, 0.64) 100%),
+        linear-gradient(180deg, rgba(8, 13, 19, 0.38) 0%, rgba(8, 13, 19, 0.58) 100%);
     }
 
-    .conteudo {
+    .cartao {
       width: 100%;
-      max-width: 34rem;
+      max-width: 30.5rem;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
-      gap: 1.15rem;
-      padding: clamp(1.75rem, 4vw, 2.75rem) clamp(1.25rem, 3.5vw, 2.25rem);
+      padding: clamp(1.85rem, 4.5vw, 2.4rem) clamp(1.35rem, 4vw, 2rem);
       border-radius: 1rem;
-      background-color: rgba(11, 17, 24, 0.44);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
+      background-color: #ffffff;
+      color: #111111;
+      box-shadow: 0 22px 54px rgba(0, 0, 0, 0.3);
+      transition: transform 160ms ease, box-shadow 160ms ease;
+    }
+
+    .oferta-link:focus-visible .cartao {
+      box-shadow: 0 0 0 3px #f59e0b, 0 22px 54px rgba(0, 0, 0, 0.38);
     }
 
     .titulo {
-      font-size: clamp(2rem, 5vw, 3.25rem);
+      font-size: clamp(1.6rem, 4.2vw, 2rem);
       font-weight: 700;
-      line-height: 1.12;
-      letter-spacing: -0.025em;
-      color: #ffffff;
+      line-height: 1.18;
+      letter-spacing: -0.02em;
+      color: #000000;
       text-wrap: balance;
     }
 
     .texto {
-      max-width: 28rem;
-      font-size: clamp(1rem, 2.2vw, 1.1875rem);
+      max-width: 24.5rem;
+      margin-top: 0.85rem;
+      font-size: 0.96875rem;
       font-weight: 400;
-      line-height: 1.55;
-      color: rgba(241, 245, 249, 0.92);
+      line-height: 1.5;
+      color: #262626;
       text-wrap: balance;
     }
 
@@ -130,26 +134,26 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 0.5rem;
-      min-height: 3.25rem;
-      min-width: 13.5rem;
-      margin-top: 0.35rem;
-      padding: 0.9rem 2rem;
-      border-radius: 0.625rem;
-      background-color: #16a34a;
+      width: 100%;
+      max-width: 22rem;
+      min-height: 3.375rem;
+      margin-top: 1.55rem;
+      padding: 0.85rem 1.5rem;
+      border: 1.5px solid #000000;
+      border-radius: 0.5rem;
+      background-color: #000000;
       color: #ffffff;
-      font-size: 1.0625rem;
-      font-weight: 600;
+      font-size: 1rem;
+      font-weight: 700;
       line-height: 1.2;
-      letter-spacing: 0.01em;
-      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.32);
-      transition: background-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+      letter-spacing: 0.005em;
+      transition: background-color 150ms ease, border-color 150ms ease, transform 150ms ease;
     }
 
     .oferta-link:hover .botao {
-      background-color: #15803d;
+      background-color: #1f1f1f;
+      border-color: #1f1f1f;
       transform: translateY(-1px);
-      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.4);
     }
 
     .oferta-link:active .botao {
@@ -157,27 +161,55 @@
     }
 
     .oferta-link:focus-visible .botao {
-      box-shadow: 0 0 0 3px #0e141b, 0 0 0 6px #f59e0b;
-    }
-
-    .botao-seta {
-      display: inline-block;
-      transition: transform 160ms ease;
-    }
-
-    .oferta-link:hover .botao-seta {
-      transform: translateX(3px);
+      box-shadow: 0 0 0 3px #ffffff, 0 0 0 6px #000000;
     }
 
     .aviso {
-      max-width: 26rem;
-      margin-top: 0.15rem;
+      max-width: 24rem;
+      margin-top: 0.95rem;
       font-size: 0.8125rem;
-      line-height: 1.5;
-      color: rgba(226, 232, 240, 0.84);
+      line-height: 1.45;
+      color: #525252;
     }
 
-    .privacidade-backdrop {
+    /* Botão discreto fora da área clicável da oferta para revisar preferências */
+    .cookies-gatilho {
+      position: fixed;
+      right: 1rem;
+      bottom: 1rem;
+      z-index: 20;
+      appearance: none;
+      padding: 0.5rem 0.85rem;
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      border-radius: 0.5rem;
+      background-color: rgba(14, 20, 27, 0.82);
+      color: #f8fafc;
+      font: inherit;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      line-height: 1.2;
+      cursor: pointer;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      transition: background-color 140ms ease, border-color 140ms ease;
+    }
+
+    .cookies-gatilho:hover {
+      background-color: rgba(14, 20, 27, 0.95);
+      border-color: rgba(255, 255, 255, 0.45);
+    }
+
+    .cookies-gatilho:focus-visible {
+      outline: 2px solid #f59e0b;
+      outline-offset: 2px;
+    }
+
+    .cookies-gatilho[hidden] {
+      display: none;
+    }
+
+    /* Diálogo funcional de Cookie Settings (fora do link da oferta) */
+    .cookies-backdrop {
       position: fixed;
       inset: 0;
       z-index: 30;
@@ -185,14 +217,14 @@
       align-items: center;
       justify-content: center;
       padding: 1rem;
-      background-color: rgba(8, 13, 19, 0.46);
+      background-color: rgba(8, 13, 19, 0.52);
     }
 
-    .privacidade-backdrop[hidden] {
+    .cookies-backdrop[hidden] {
       display: none;
     }
 
-    .privacidade-card {
+    .cookies-card {
       position: relative;
       width: 100%;
       max-width: 30.5rem;
@@ -201,10 +233,10 @@
       background-color: #ffffff;
       color: #111111;
       text-align: center;
-      box-shadow: 0 22px 54px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 22px 54px rgba(0, 0, 0, 0.32);
     }
 
-    .privacidade-fechar {
+    .cookies-fechar {
       position: absolute;
       top: 0.75rem;
       right: 0.75rem;
@@ -223,17 +255,17 @@
       transition: background-color 140ms ease, color 140ms ease;
     }
 
-    .privacidade-fechar:hover {
+    .cookies-fechar:hover {
       background-color: #f1f5f9;
       color: #000000;
     }
 
-    .privacidade-fechar:focus-visible {
+    .cookies-fechar:focus-visible {
       outline: 2px solid #000000;
       outline-offset: 2px;
     }
 
-    .privacidade-titulo {
+    .cookies-titulo {
       font-size: clamp(1.5rem, 4vw, 1.85rem);
       font-weight: 700;
       line-height: 1.18;
@@ -242,7 +274,7 @@
       text-wrap: balance;
     }
 
-    .privacidade-texto {
+    .cookies-texto {
       max-width: 25rem;
       margin: 0.9rem auto 0;
       font-size: 0.9375rem;
@@ -251,14 +283,14 @@
       color: #262626;
     }
 
-    .privacidade-acoes {
+    .cookies-acoes {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 0.75rem;
       margin-top: 1.65rem;
     }
 
-    .privacidade-btn {
+    .cookies-btn {
       appearance: none;
       display: inline-flex;
       align-items: center;
@@ -272,51 +304,51 @@
       font-weight: 700;
       line-height: 1.2;
       cursor: pointer;
-      transition: background-color 140ms ease, border-color 140ms ease, opacity 140ms ease;
+      transition: background-color 140ms ease, border-color 140ms ease;
     }
 
-    .privacidade-btn:focus-visible {
+    .cookies-btn:focus-visible {
       outline: 2px solid #f59e0b;
       outline-offset: 2px;
     }
 
-    .privacidade-btn--aceitar {
+    .cookies-btn--aceitar {
       background-color: #000000;
       border: 1.5px solid #000000;
       color: #ffffff;
     }
 
-    .privacidade-btn--aceitar:hover {
+    .cookies-btn--aceitar:hover {
       background-color: #1f1f1f;
       border-color: #1f1f1f;
     }
 
-    .privacidade-btn--recusar {
+    .cookies-btn--recusar {
       background-color: #eef1f0;
       border: 1.5px solid #262626;
       color: #000000;
     }
 
-    .privacidade-btn--recusar:hover {
+    .cookies-btn--recusar:hover {
       background-color: #e2e7e5;
     }
 
     @media (max-width: 380px) {
-      .privacidade-acoes {
+      .cookies-acoes {
         grid-template-columns: 1fr;
       }
     }
 
     @media (prefers-reduced-motion: reduce) {
+      .cartao,
       .botao,
-      .botao-seta,
-      .privacidade-btn,
-      .privacidade-fechar {
+      .cookies-btn,
+      .cookies-fechar,
+      .cookies-gatilho {
         transition: none;
       }
 
-      .oferta-link:hover .botao,
-      .oferta-link:hover .botao-seta {
+      .oferta-link:hover .botao {
         transform: none;
       }
     }
@@ -351,36 +383,35 @@
 
       <span class="camada-escura" aria-hidden="true"></span>
 
-      <div class="conteudo">
+      <div class="cartao">
         <h1 id="titulo-oferta" class="titulo"></h1>
         <p id="texto-oferta" class="texto"></p>
-        <span class="botao">
-          <span id="texto-botao"></span>
-          <span class="botao-seta" aria-hidden="true">&#8594;</span>
-        </span>
+        <span id="texto-botao" class="botao"></span>
         <p id="aviso-afiliado" class="aviso"></p>
       </div>
     </a>
   </main>
 
+  <button id="btn-abrir-cookies" type="button" class="cookies-gatilho" hidden></button>
+
   <div
-    id="barra-privacidade"
-    class="privacidade-backdrop"
+    id="modal-cookies"
+    class="cookies-backdrop"
     role="dialog"
     aria-modal="true"
-    aria-labelledby="titulo-privacidade"
-    aria-describedby="texto-privacidade"
+    aria-labelledby="titulo-cookies"
+    aria-describedby="texto-cookies"
     hidden
   >
-    <div class="privacidade-card">
-      <button id="btn-privacidade-fechar" type="button" class="privacidade-fechar" aria-label="Close">
+    <div class="cookies-card">
+      <button id="btn-cookies-fechar" type="button" class="cookies-fechar" aria-label="">
         <span aria-hidden="true">&#215;</span>
       </button>
-      <h2 id="titulo-privacidade" class="privacidade-titulo"></h2>
-      <p id="texto-privacidade" class="privacidade-texto"></p>
-      <div class="privacidade-acoes">
-        <button id="btn-privacidade-aceitar" type="button" class="privacidade-btn privacidade-btn--aceitar"></button>
-        <button id="btn-privacidade-recusar" type="button" class="privacidade-btn privacidade-btn--recusar"></button>
+      <h2 id="titulo-cookies" class="cookies-titulo"></h2>
+      <p id="texto-cookies" class="cookies-texto"></p>
+      <div class="cookies-acoes">
+        <button id="btn-cookies-aceitar" type="button" class="cookies-btn cookies-btn--aceitar"></button>
+        <button id="btn-cookies-recusar" type="button" class="cookies-btn cookies-btn--recusar"></button>
       </div>
     </div>
   </div>
@@ -391,29 +422,60 @@
 
       var cfg = typeof CONFIG !== "undefined" && CONFIG ? CONFIG : {};
       var adsCfg = cfg.googleAds && typeof cfg.googleAds === "object" ? cfg.googleAds : {};
-      var privCfg = cfg.privacidade && typeof cfg.privacidade === "object" ? cfg.privacidade : {};
+      var cookiesCfg = cfg.cookies && typeof cfg.cookies === "object" ? cfg.cookies : {};
+      var textosMapa = cfg.textos && typeof cfg.textos === "object" ? cfg.textos : {};
 
       var idioma = typeof cfg.idioma === "string" && cfg.idioma.trim() ? cfg.idioma.trim() : "en-US";
-      var produto = typeof cfg.produto === "string" ? cfg.produto.trim() : "";
-      var titulo = typeof cfg.titulo === "string" && cfg.titulo.trim() ? cfg.titulo.trim() : produto;
-      var texto = typeof cfg.texto === "string" ? cfg.texto.trim() : "";
-      var textoBotao = typeof cfg.textoBotao === "string" ? cfg.textoBotao.trim() : "";
-      var avisoAfiliado = typeof cfg.avisoAfiliado === "string" ? cfg.avisoAfiliado.trim() : "";
-      var imagemCelular = typeof cfg.imagemCelular === "string" && cfg.imagemCelular.trim() ? cfg.imagemCelular.trim() : "imagens/celular.webp";
-      var imagemComputador = typeof cfg.imagemComputador === "string" && cfg.imagemComputador.trim() ? cfg.imagemComputador.trim() : "imagens/computador.webp";
-      var linkAfiliado = typeof cfg.linkAfiliado === "string" ? cfg.linkAfiliado.trim() : "";
+      var idiomaBase = idioma.split("-")[0];
+      var pacoteIdioma = textosMapa[idioma] || textosMapa[idiomaBase] || {};
+      var textosCookies = pacoteIdioma.cookies && typeof pacoteIdioma.cookies === "object" ? pacoteIdioma.cookies : {};
 
+      var produto = typeof cfg.produto === "string" ? cfg.produto.trim() : "";
+      var titulo = lerTexto(cfg.titulo, pacoteIdioma.titulo, produto);
+      var texto = lerTexto(cfg.texto, pacoteIdioma.texto, "");
+      var textoBotao = lerTexto(cfg.textoBotao, pacoteIdioma.textoBotao, "");
+      var avisoAfiliado = lerTexto(cfg.avisoAfiliado, pacoteIdioma.avisoAfiliado, "");
+      var imagemCelular = lerTexto(cfg.imagemCelular, "", "imagens/celular.webp");
+      var imagemComputador = lerTexto(cfg.imagemComputador, "", "imagens/computador.webp");
+      var linkAfiliado = lerTexto(cfg.linkAfiliado, "", "");
+
+      var cookiesAtivo = cookiesCfg.ativo !== false;
       var adsAtivo = adsCfg.ativo === true;
       var adsId = typeof adsCfg.id === "string" ? adsCfg.id.trim() : "";
       var adsRotulo = typeof adsCfg.rotuloConversao === "string" ? adsCfg.rotuloConversao.trim() : "";
       var tempoLimiteRaw = Number(adsCfg.tempoLimiteMs);
       var tempoLimiteMs = tempoLimiteRaw > 0 ? Math.min(Math.max(tempoLimiteRaw, 150), 1500) : 450;
 
-      var CHAVE_PRIVACIDADE = "presell_ads_privacidade_v1";
+      var CHAVE_CONSENTIMENTO = "presell_cookie_consent_v1";
       var gtagCarregado = false;
-      var navegando = false;
+      var eventoEnviadoNoClique = false;
 
-      // Idioma, título e descrição vindos do configuracoes.js
+      function lerTexto(direto, traduzido, padrao) {
+        if (typeof direto === "string" && direto.trim()) {
+          return direto.trim();
+        }
+        if (typeof traduzido === "string" && traduzido.trim()) {
+          return traduzido.trim();
+        }
+        return padrao;
+      }
+
+      function lerConsentimento() {
+        try {
+          return window.localStorage.getItem(CHAVE_CONSENTIMENTO);
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function salvarConsentimento(valor) {
+        try {
+          window.localStorage.setItem(CHAVE_CONSENTIMENTO, valor);
+        } catch (e) {
+          // Ignora indisponibilidade de localStorage
+        }
+      }
+
       document.documentElement.lang = idioma;
       document.title = titulo || produto;
 
@@ -422,7 +484,6 @@
         metaDescricao.setAttribute("content", texto);
       }
 
-      // Preenche a página com os dados do configuracoes.js
       var linkEl = document.getElementById("link-oferta");
       var fonteComputadorEl = document.getElementById("fonte-computador");
       var imagemFundoEl = document.getElementById("imagem-fundo");
@@ -443,6 +504,7 @@
 
       if (textoBotaoEl) {
         textoBotaoEl.textContent = textoBotao;
+        textoBotaoEl.hidden = !textoBotao;
       }
 
       if (avisoEl) {
@@ -454,7 +516,6 @@
         linkEl.setAttribute("href", linkAfiliado);
       }
 
-      // Só altera atributos de imagem se diferentes do padrão, evitando download duplicado
       if (fonteComputadorEl && fonteComputadorEl.getAttribute("srcset") !== imagemComputador) {
         fonteComputadorEl.setAttribute("srcset", imagemComputador);
       }
@@ -473,42 +534,17 @@
         }
       }
 
-      // Preferências de privacidade (controles opcionais fora da área clicável da oferta)
-      function lerPreferenciaSalva() {
-        try {
-          return window.localStorage.getItem(CHAVE_PRIVACIDADE);
-        } catch (e) {
-          return null;
+      function consentimentoAutorizado() {
+        if (!cookiesAtivo) {
+          return adsCfg.autorizado !== false;
         }
-      }
-
-      function salvarPreferencia(valor) {
-        try {
-          window.localStorage.setItem(CHAVE_PRIVACIDADE, valor);
-        } catch (e) {
-          // Ignora indisponibilidade de localStorage
-        }
-      }
-
-      function privacidadePermiteAds() {
-        if (privCfg.permitirGoogleAds === false) {
-          return false;
-        }
-        if (privCfg.exibirControles === true) {
-          return lerPreferenciaSalva() === "granted";
-        }
-        return true;
-      }
-
-      function adsConfigurado() {
-        return Boolean(adsAtivo && adsId && adsRotulo);
+        return lerConsentimento() === "granted";
       }
 
       function rastreamentoPermitido() {
-        return adsConfigurado() && privacidadePermiteAds();
+        return Boolean(adsAtivo && adsId && adsRotulo && consentimentoAutorizado());
       }
 
-      // Carregamento assíncrono do Google Ads (gtag.js)
       function carregarGoogleAds() {
         if (gtagCarregado || !rastreamentoPermitido()) {
           return;
@@ -529,68 +565,93 @@
         document.head.appendChild(script);
       }
 
-      var barraPrivacidade = document.getElementById("barra-privacidade");
-      if (barraPrivacidade && privCfg.exibirControles === true) {
-        var salvo = lerPreferenciaSalva();
-        if (salvo !== "granted" && salvo !== "denied") {
-          var tituloPriv = document.getElementById("titulo-privacidade");
-          var textoPriv = document.getElementById("texto-privacidade");
-          var btnAceitar = document.getElementById("btn-privacidade-aceitar");
-          var btnRecusar = document.getElementById("btn-privacidade-recusar");
-          var btnFechar = document.getElementById("btn-privacidade-fechar");
+      // Diálogo real de Cookie Settings (separado do link da oferta)
+      var modalCookies = document.getElementById("modal-cookies");
+      var btnAbrirCookies = document.getElementById("btn-abrir-cookies");
+      var tituloCookiesEl = document.getElementById("titulo-cookies");
+      var textoCookiesEl = document.getElementById("texto-cookies");
+      var btnAceitarEl = document.getElementById("btn-cookies-aceitar");
+      var btnRecusarEl = document.getElementById("btn-cookies-recusar");
+      var btnFecharEl = document.getElementById("btn-cookies-fechar");
 
-          if (tituloPriv) tituloPriv.textContent = privCfg.titulo || "";
-          if (textoPriv) textoPriv.textContent = privCfg.texto || "";
-          if (btnAceitar) btnAceitar.textContent = privCfg.botaoPermitir || "";
-          if (btnRecusar) btnRecusar.textContent = privCfg.botaoRecusar || "";
-          if (btnFechar && privCfg.rotuloFechar) {
-            btnFechar.setAttribute("aria-label", privCfg.rotuloFechar);
+      if (cookiesAtivo && modalCookies) {
+        var cookieTitulo = lerTexto(cookiesCfg.titulo, textosCookies.titulo, "Cookie Settings");
+        var cookieTexto = lerTexto(cookiesCfg.texto, textosCookies.texto, "");
+        var cookieAceitar = lerTexto(cookiesCfg.aceitar, textosCookies.aceitar, "Yes, I accept");
+        var cookieRecusar = lerTexto(cookiesCfg.recusar, textosCookies.recusar, "No, I do not accept");
+        var cookieFechar = lerTexto(cookiesCfg.fechar, textosCookies.fechar, "Close");
+        var cookieGerenciar = lerTexto(cookiesCfg.gerenciar, textosCookies.gerenciar, cookieTitulo);
+
+        if (tituloCookiesEl) tituloCookiesEl.textContent = cookieTitulo;
+        if (textoCookiesEl) textoCookiesEl.textContent = cookieTexto;
+        if (btnAceitarEl) btnAceitarEl.textContent = cookieAceitar;
+        if (btnRecusarEl) btnRecusarEl.textContent = cookieRecusar;
+        if (btnFecharEl) btnFecharEl.setAttribute("aria-label", cookieFechar);
+        if (btnAbrirCookies) btnAbrirCookies.textContent = cookieGerenciar;
+
+        function abrirModalCookies() {
+          modalCookies.hidden = false;
+          if (btnAbrirCookies) btnAbrirCookies.hidden = true;
+          if (btnAceitarEl) btnAceitarEl.focus();
+        }
+
+        function fecharModalCookies(escolha) {
+          if (escolha === "granted" || escolha === "denied") {
+            salvarConsentimento(escolha);
           }
-
-          barraPrivacidade.hidden = false;
-
-          function fecharComPreferencia(valor) {
-            salvarPreferencia(valor);
-            barraPrivacidade.hidden = true;
-            if (valor === "granted") {
-              carregarGoogleAds();
-            }
+          modalCookies.hidden = true;
+          if (btnAbrirCookies) btnAbrirCookies.hidden = false;
+          if (escolha === "granted") {
+            carregarGoogleAds();
           }
+        }
 
-          if (btnAceitar) {
-            btnAceitar.addEventListener("click", function () {
-              fecharComPreferencia("granted");
-            });
-          }
+        var escolhaSalva = lerConsentimento();
+        if (escolhaSalva === "granted" || escolhaSalva === "denied") {
+          modalCookies.hidden = true;
+          if (btnAbrirCookies) btnAbrirCookies.hidden = false;
+        } else {
+          modalCookies.hidden = false;
+          if (btnAbrirCookies) btnAbrirCookies.hidden = true;
+        }
 
-          if (btnRecusar) {
-            btnRecusar.addEventListener("click", function () {
-              fecharComPreferencia("denied");
-            });
-          }
-
-          if (btnFechar) {
-            btnFechar.addEventListener("click", function () {
-              fecharComPreferencia("denied");
-            });
-          }
-
-          document.addEventListener("keydown", function onKeyDown(e) {
-            if (e.key === "Escape" && !barraPrivacidade.hidden) {
-              fecharComPreferencia("denied");
-              document.removeEventListener("keydown", onKeyDown);
-            }
+        if (btnAceitarEl) {
+          btnAceitarEl.addEventListener("click", function () {
+            fecharModalCookies("granted");
           });
         }
+
+        if (btnRecusarEl) {
+          btnRecusarEl.addEventListener("click", function () {
+            fecharModalCookies("denied");
+          });
+        }
+
+        if (btnFecharEl) {
+          btnFecharEl.addEventListener("click", function () {
+            fecharModalCookies("denied");
+          });
+        }
+
+        if (btnAbrirCookies) {
+          btnAbrirCookies.addEventListener("click", function () {
+            abrirModalCookies();
+          });
+        }
+
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && !modalCookies.hidden) {
+            fecharModalCookies("denied");
+          }
+        });
       }
 
       carregarGoogleAds();
 
       window.addEventListener("pageshow", function () {
-        navegando = false;
+        eventoEnviadoNoClique = false;
       });
 
-      // Dispara um único evento conversion ("Clique para a oferta") por clique válido
       if (linkEl) {
         linkEl.addEventListener("click", function (event) {
           var destino = linkEl.getAttribute("href");
@@ -613,25 +674,29 @@
             event.altKey;
 
           if (aberturaNovaAba) {
-            if (typeof window.gtag === "function") {
+            if (!eventoEnviadoNoClique && typeof window.gtag === "function") {
+              eventoEnviadoNoClique = true;
               try {
                 window.gtag("event", "conversion", {
                   send_to: sendTo,
                   transport_type: "beacon"
                 });
               } catch (e) {
-                // Mantém abertura nativa em nova aba
+                // Segue abertura nativa em nova aba
               }
+              window.setTimeout(function () {
+                eventoEnviadoNoClique = false;
+              }, 1000);
             }
             return;
           }
 
           event.preventDefault();
 
-          if (navegando) {
+          if (eventoEnviadoNoClique) {
             return;
           }
-          navegando = true;
+          eventoEnviadoNoClique = true;
 
           var redirecionou = false;
           var temporizador = null;
