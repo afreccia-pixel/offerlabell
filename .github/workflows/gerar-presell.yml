@@ -30,7 +30,7 @@ jobs:
       - run: python -m pip install 'Pillow==12.2.0'
       - name: Pesquisar e criar o rascunho
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           PRODUTO: ${{ inputs.produto }}
           AFILIADO: ${{ inputs.afiliado }}
           IDIOMA: ${{ inputs.idioma }}
