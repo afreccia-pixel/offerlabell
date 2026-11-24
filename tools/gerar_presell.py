@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import re
 import unicodedata
+from urllib.error import HTTPError
 from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 
@@ -31,29 +32,37 @@ say so instead of guessing. Return only JSON with fields description (short
 summary), sections (array of objects with heading, body and source), and no
 HTML. Include the authoritative HTTPS source URL for each section."""
     request = Request(
-        "https://api.openai.com/v1/responses",
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
         data=json.dumps({
-            "model": "gpt-5.4-mini",
-            "tools": [{"type": "web_search"}],
-            "tool_choice": "required",
-            "store": False,
-            "input": prompt,
-            "text": {"format": {"type": "json_object"}},
+            "contents": [{"parts": [{"text": prompt}]}],
+            "tools": [{"google_search": {}}],
         }).encode(),
         headers={
-            "Authorization": "Bearer " + os.environ["OPENAI_API_KEY"],
+            "x-goog-api-key": os.environ["GEMINI_API_KEY"],
             "Content-Type": "application/json",
         },
     )
-    with urlopen(request, timeout=180) as response:
-        result = json.load(response)
-    parts = [
-        part["text"] for item in result["output"] if item["type"] == "message"
-        for part in item["content"] if part["type"] == "output_text"
-    ]
-    if result["status"] != "completed" or not parts:
-        raise ValueError("A pesquisa não retornou uma página completa.")
-    return json.loads("".join(parts))
+    try:
+        with urlopen(request, timeout=180) as response:
+            result = json.load(response)
+    except HTTPError as error:
+        hints = {
+            400: "Confira se a chave está ativa no Google AI Studio.",
+            403: "Confira as permissões da chave no projeto Gemini.",
+            429: "A cota do projeto foi atingida. Aguarde ou confira os limites no Google AI Studio.",
+        }
+        raise SystemExit(f"Gemini HTTP {error.code}. {hints.get(error.code, 'Confira o status da API Gemini.')}") from None
+
+    candidate = next(iter(result.get("candidates", [])), {})
+    if not candidate.get("groundingMetadata", {}).get("groundingChunks"):
+        raise SystemExit("O Gemini não encontrou fontes na pesquisa. Confira o produto e o link.")
+    parts = candidate.get("content", {}).get("parts", [])
+    answer = "".join(part.get("text", "") for part in parts if not part.get("thought")).strip()
+    answer = re.sub(r"^\s*```(?:json)?\s*|\s*```\s*$", "", answer, flags=re.IGNORECASE)
+    try:
+        return json.loads(answer)
+    except json.JSONDecodeError:
+        raise SystemExit("O Gemini retornou um rascunho incompleto. Execute novamente.") from None
 
 
 COPY = {
@@ -160,8 +169,8 @@ def main():
     folder = args.out / slug
     if folder.exists():
         parser.error(f"A pasta {folder} já existe. Escolha outra pasta de saída.")
-    if not os.environ.get("OPENAI_API_KEY"):
-        parser.error("Configure OPENAI_API_KEY antes de executar.")
+    if not os.environ.get("GEMINI_API_KEY"):
+        parser.error("Configure GEMINI_API_KEY antes de executar.")
     data = research(product, affiliate, args.language)
     page = render(product, affiliate, args.language, canonical, data)
     folder.mkdir(parents=True)
