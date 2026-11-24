@@ -83,5 +83,32 @@ details p{margin:8px 0 0;max-width:66ch}
 </section>
 </div>
 </main>
+<script>
+document.querySelectorAll('a[rel~="sponsored"]').forEach(function (link) {
+  link.addEventListener('click', function (event) {
+    if (event.defaultPrevented || typeof window.gtag !== 'function') return;
+
+    const conversion = {send_to: 'AW-871066649/W_MiCLby1b4dEJnYrZ8D'};
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) {
+      window.gtag('event', 'conversion', conversion);
+      return;
+    }
+
+    event.preventDefault();
+    const fallback = window.setTimeout(openOffer, 700);
+
+    function openOffer() {
+      if (openOffer.sent) return;
+      openOffer.sent = true;
+      window.clearTimeout(fallback);
+      window.location.assign(link.href);
+    }
+
+    conversion.event_callback = openOffer;
+    conversion.event_timeout = 700;
+    window.gtag('event', 'conversion', conversion);
+  });
+});
+</script>
 </body>
 </html>
