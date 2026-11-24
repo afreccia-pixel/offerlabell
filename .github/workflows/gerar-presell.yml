@@ -8,6 +8,9 @@ on:
       afiliado:
         description: Link HTTPS de afiliado
         required: true
+      imagem:
+        description: URL HTTPS da foto do produto (opcional)
+        required: false
       idioma:
         description: Idioma da página
         type: choice
@@ -34,7 +37,13 @@ jobs:
           PRODUTO: ${{ inputs.produto }}
           AFILIADO: ${{ inputs.afiliado }}
           IDIOMA: ${{ inputs.idioma }}
-        run: python tools/gerar_presell.py --language "$IDIOMA" -- "$PRODUTO" "$AFILIADO"
+          IMAGEM: ${{ inputs.imagem }}
+        run: |
+          args=(--language "$IDIOMA")
+          if [[ -n "$IMAGEM" ]]; then
+            args+=(--product-image "$IMAGEM")
+          fi
+          python tools/gerar_presell.py "${args[@]}" -- "$PRODUTO" "$AFILIADO"
       - uses: actions/upload-artifact@v4
         with:
           name: presell-para-revisao
