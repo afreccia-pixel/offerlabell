@@ -29,7 +29,6 @@ const CONFIG = {
         texto: "We use cookies and similar technologies to help personalize content, tailor and measure ads, and provide a better experience. By clicking accept, you agree to this as described in our Cookie Policy.",
         aceitar: "Yes, I accept",
         recusar: "No, I do not accept",
-        fechar: "Close",
         gerenciar: "Cookie Settings"
       }
     },
@@ -43,7 +42,6 @@ const CONFIG = {
         texto: "Usamos cookies e tecnologias semelhantes para personalizar conteúdo, adaptar e medir anúncios e oferecer uma melhor experiência. Ao clicar em aceitar, você concorda com isso conforme descrito em nossa Política de Cookies.",
         aceitar: "Sim, aceito",
         recusar: "Não aceito",
-        fechar: "Fechar",
         gerenciar: "Configurações de Cookies"
       }
     },
@@ -57,7 +55,6 @@ const CONFIG = {
         texto: "Usamos cookies y tecnologías similares para personalizar el contenido, adaptar y medir anuncios y ofrecer una mejor experiencia. Al hacer clic en aceptar, aceptas esto según nuestra Política de Cookies.",
         aceitar: "Sí, acepto",
         recusar: "No acepto",
-        fechar: "Cerrar",
         gerenciar: "Configuración de Cookies"
       }
     }

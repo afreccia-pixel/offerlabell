@@ -24,7 +24,6 @@ const CONFIG = {
         texto: "Wir verwenden Cookies und ähnliche Technologien, um Inhalte zu personalisieren, Werbung auf Sie abzustimmen, ihre Wirkung zu messen und Ihr Nutzungserlebnis zu verbessern. Wenn Sie auf „Ja, ich stimme zu“ klicken, willigen Sie in die in unserer Cookie-Richtlinie beschriebene Nutzung ein.",
         aceitar: "Ja, ich stimme zu",
         recusar: "Nein, ich lehne ab",
-        fechar: "Schließen",
         gerenciar: "Cookie-Einstellungen"
       }
     }
