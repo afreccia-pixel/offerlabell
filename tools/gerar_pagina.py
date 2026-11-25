@@ -84,21 +84,21 @@ HTML. Include the authoritative HTTPS source URL for each section."""
 
 
 DETAILS = {
-    "en": ("Product and purchase details on seller’s site", "Shopping guide"),
-    "de": ("Produkt- und Kaufdetails beim Anbieter", "Kaufratgeber"),
-    "pt": ("Detalhes do produto no site do vendedor", "Guia de compra"),
+    "en": ("Product and purchase details", "Shopping guide"),
+    "de": ("Produkt- und Kaufdetails", "Kaufratgeber"),
+    "pt": ("Detalhes do produto e da compra", "Guia de compra"),
 }
 
 COPY = {
-    "en": ("Shopping guide", "View seller’s offer", "I may earn a commission if you buy through this link.", "Source"),
-    "de": ("Kaufratgeber", "Zum Angebot des Anbieters", "Bei einem Kauf über diesen Link kann ich eine Provision erhalten.", "Quelle"),
-    "pt": ("Guia de compra", "Ver oferta no vendedor", "Posso receber uma comissão se você comprar por este link.", "Fonte"),
+    "en": ("Shopping guide", "View seller’s offer", "Source"),
+    "de": ("Kaufratgeber", "Zum Angebot des Anbieters", "Quelle"),
+    "pt": ("Guia de compra", "Ver oferta no vendedor", "Fonte"),
 }
 
 
 def render(product, affiliate, language, canonical, data, product_image=None):
     escape = html.escape
-    guide, button, disclosure, source_label = COPY[language]
+    guide, button, source_label = COPY[language]
     title = escape(f"{product} | {guide}")
     description = escape(data["description"])
     image = escape(canonical + "miniatura.png")
@@ -130,26 +130,25 @@ def render(product, affiliate, language, canonical, data, product_image=None):
 <meta property="og:image" content="{image}">
 <meta property="og:image:alt" content="{title}">
 <style>
-*{{box-sizing:border-box}}
-body{{margin:0;background:#f5f2eb;color:#162d2b;font:1rem/1.6 system-ui,sans-serif}}
-.cta{{display:inline-flex;justify-content:center;align-items:center;gap:14px;min-height:50px;padding:12px 22px;border-radius:8px;color:#172a25;background:#f2d18e;font-weight:800;text-decoration:none}}
-a:focus-visible,summary:focus-visible{{outline:3px solid #de9b44;outline-offset:5px}}
-.hero{{display:grid;justify-items:center;align-content:center;gap:clamp(12px,2.4vw,26px);padding:clamp(26px,5vh,55px) 20px;background:#fff;color:#163b37;text-align:center;border-bottom:1px solid #e4ece7}}
-.hero h1{{max-width:950px;margin:0;font:800 clamp(1.9rem,4.1vw,3.35rem)/1.08 system-ui,sans-serif;letter-spacing:-.035em}}
-.hero h1 span{{color:#247d6b}}
-.product-photo{{display:block;width:min(100%,32rem);height:clamp(9rem,32svh,16rem);object-fit:contain}}
-@media(max-width:650px){{.product-photo{{height:clamp(8rem,27svh,11rem)}}}}
-.hero-action{{width:min(100%,390px)}}
-.hero-action .cta{{display:flex;width:100%;background:#164b48;color:#fff;padding:15px 20px;box-shadow:0 9px 20px #164b4826}}
-.hero-action .cta:hover{{background:#103d3a}}
-.hero-action .disclosure{{color:#4f6360;margin:8px 0 0}}
-@media(max-width:650px){{.hero h1 span{{display:block}}}}
-.shell{{width:min(960px,calc(100% - 28px));margin:auto;padding:18px 0;color:#162d2b}}
-.purchase-details>a{{color:#164b48;font-weight:750;text-underline-offset:3px}}
-.purchase-details p{{margin:6px 0 12px}}
-.purchase-details h2{{font-size:1.2rem;margin:16px 0 0}}
-.purchase-details details{{margin-top:14px}}
-.purchase-details summary{{cursor:pointer;font-weight:650}}
+* {{ box-sizing: border-box; }}
+body {{ margin: 0; background: #f5f2ec; color: #26372e; font: 1rem/1.65 system-ui, sans-serif; }}
+.hero {{ display: grid; justify-items: center; gap: clamp(1rem, 2.6vw, 2rem); padding: clamp(1.75rem, 5vw, 3.5rem) 1rem; background: radial-gradient(ellipse at 50% 65%, #fafff7 0%, #e4eee1 55%, #cbded1 100%); text-align: center; }}
+.hero h1 {{ margin: 0; max-width: 100%; overflow-wrap: anywhere; color: #173e30; font: 600 clamp(2.75rem, 7vw, 5rem)/1 Georgia, serif; letter-spacing: -.055em; }}
+.product-photo {{ display: block; width: min(100%, 32rem); height: clamp(9rem, 32svh, 16rem); object-fit: contain; filter: drop-shadow(0 .65rem .48rem #193e302e); }}
+.hero-action {{ width: min(100%, 22rem); }}
+.cta {{ display: flex; justify-content: center; align-items: center; gap: .75rem; min-height: 3.25rem; padding: .75rem 1.25rem; border-radius: .75rem; background: #1d523d; color: white; font-weight: 750; text-decoration: none; box-shadow: 0 .45rem 1rem #123d3429; }}
+.cta:hover {{ background: #133b2a; }}
+a:focus-visible, summary:focus-visible {{ outline: 3px solid #9d6025; outline-offset: 4px; }}
+.shell {{ width: min(46rem, calc(100% - 2rem)); margin: clamp(1rem, 4vw, 2.25rem) auto; padding: clamp(1.15rem, 4vw, 2rem); background: #fff; border: 1px solid #e4e8df; border-radius: 1rem; }}
+.purchase-details a {{ color: #205640; text-underline-offset: .2em; }}
+.purchase-details > a {{ font-size: 1.15rem; font-weight: 750; }}
+.purchase-details p {{ margin: .5rem 0; }}
+.purchase-details h2 {{ margin: 1rem 0 0; font-size: 1.15rem; }}
+.purchase-details details {{ margin-top: 1rem; padding-top: .875rem; border-top: 1px solid #e4e8df; }}
+.purchase-details summary {{ cursor: pointer; font-weight: 700; }}
+@media (max-width: 650px) {{
+  .product-photo {{ height: clamp(8rem, 27svh, 11rem); }}
+}}
 </style>
 <!-- GOOGLE ADS: cole aqui a tag base, se ainda nao estiver instalada nesta pagina. -->
 </head>
@@ -168,7 +167,6 @@ a:focus-visible,summary:focus-visible{{outline:3px solid #de9b44;outline-offset:
 <details><summary>{summary}</summary>
 {''.join(sections)}
 </details>
-<p><small>{disclosure}</small></p>
 </div>
 </main>
 <!-- GOOGLE ADS: cole aqui o snippet de conversao por clique e associe aos links da oferta usando o rotulo deste produto. -->
