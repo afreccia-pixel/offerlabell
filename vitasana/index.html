@@ -22,14 +22,9 @@ a:focus-visible,summary:focus-visible{outline:3px solid #de9b44;outline-offset:5
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
   gap: 1rem;
-  min-height: clamp(26rem, 58vw, 40rem);
   padding: clamp(1.25rem, 4vw, 2.5rem) 1.25rem;
-  background:
-    url("https://images.leadconnectorhq.com/image/f_webp/q_80/r_1200/u_https://assets.cdn.filesafe.space/L4LdQDk3vJiv9duiMlUd/media/694128d6b4f420237f84f016.png") calc(50% - min(18vw, 12rem)) center / min(42vw, 23rem) auto no-repeat,
-    url("https://images.leadconnectorhq.com/image/f_webp/q_80/r_1200/u_https://assets.cdn.filesafe.space/L4LdQDk3vJiv9duiMlUd/media/69412b7275b607a5e31d9d95.png") calc(50% + min(18vw, 12rem)) center / min(42vw, 23rem) auto no-repeat,
-    radial-gradient(ellipse at center, #fff 0%, #d9eae2 100%);
+  background: radial-gradient(ellipse at center, #fff 0%, #d9eae2 100%);
   color: #163b37;
   text-align: center;
   border-bottom: 1px solid #e4ece7;
@@ -42,6 +37,10 @@ a:focus-visible,summary:focus-visible{outline:3px solid #de9b44;outline-offset:5
   font: 800 clamp(1.9rem, 4.1vw, 3.35rem)/1.08 system-ui, sans-serif;
   letter-spacing: -.035em;
 }
+.product-photo{display:block;width:min(100%,32rem);height:clamp(9rem,32svh,16rem);object-fit:contain}
+@media(max-width:650px){.product-photo{height:clamp(8rem,27svh,11rem)}}
+.product-photos{display:flex;justify-content:center;gap:clamp(.5rem,3vw,1.5rem);width:min(100%,32rem)}
+.product-photos .product-photo{width:calc((100% - clamp(.5rem,3vw,1.5rem)) / 2)}
 .hero-action{width:min(100%,390px)}
 .hero-action .cta{display:flex;width:100%;background:#164b48;color:#fff;padding:15px 20px;box-shadow:0 9px 20px #164b4826}
 .hero-action .cta:hover{background:#103d3a}
@@ -59,6 +58,10 @@ a:focus-visible,summary:focus-visible{outline:3px solid #de9b44;outline-offset:5
 <main>
 <section class="hero" aria-labelledby="product">
 <h1 id="product">VitaSana</h1>
+<div class="product-photos">
+  <img class="product-photo" src="https://images.leadconnectorhq.com/image/f_webp/q_80/r_1200/u_https://assets.cdn.filesafe.space/L4LdQDk3vJiv9duiMlUd/media/694128d6b4f420237f84f016.png" alt="SlimSana" fetchpriority="high">
+  <img class="product-photo" src="https://images.leadconnectorhq.com/image/f_webp/q_80/r_1200/u_https://assets.cdn.filesafe.space/L4LdQDk3vJiv9duiMlUd/media/69412b7275b607a5e31d9d95.png" alt="GlucoSana">
+</div>
 <div class="hero-action">
 <a class="cta" href="https://vitasanacollection.com/8-products-pdp#aff=grindore" rel="sponsored noopener">View seller’s offer <span aria-hidden="true">→</span></a>
 </div>

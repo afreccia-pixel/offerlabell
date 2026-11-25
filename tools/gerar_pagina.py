@@ -137,12 +137,13 @@ a:focus-visible,summary:focus-visible{{outline:3px solid #de9b44;outline-offset:
 .hero{{display:grid;justify-items:center;align-content:center;gap:clamp(12px,2.4vw,26px);padding:clamp(26px,5vh,55px) 20px;background:#fff;color:#163b37;text-align:center;border-bottom:1px solid #e4ece7}}
 .hero h1{{max-width:950px;margin:0;font:800 clamp(1.9rem,4.1vw,3.35rem)/1.08 system-ui,sans-serif;letter-spacing:-.035em}}
 .hero h1 span{{color:#247d6b}}
-.product-photo{{display:block;width:min(100%,540px);height:clamp(230px,49vh,475px);object-fit:contain}}
+.product-photo{{display:block;width:min(100%,32rem);height:clamp(9rem,32svh,16rem);object-fit:contain}}
+@media(max-width:650px){{.product-photo{{height:clamp(8rem,27svh,11rem)}}}}
 .hero-action{{width:min(100%,390px)}}
 .hero-action .cta{{display:flex;width:100%;background:#164b48;color:#fff;padding:15px 20px;box-shadow:0 9px 20px #164b4826}}
 .hero-action .cta:hover{{background:#103d3a}}
 .hero-action .disclosure{{color:#4f6360;margin:8px 0 0}}
-@media(max-width:650px){{.hero h1 span{{display:block}}.product-photo{{height:clamp(210px,43svh,340px)}}}}
+@media(max-width:650px){{.hero h1 span{{display:block}}}}
 .shell{{width:min(960px,calc(100% - 28px));margin:auto;padding:18px 0;color:#162d2b}}
 .purchase-details>a{{color:#164b48;font-weight:750;text-underline-offset:3px}}
 .purchase-details p{{margin:6px 0 12px}}
