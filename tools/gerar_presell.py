@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import re
+import time
 import unicodedata
 from urllib.error import HTTPError
 from urllib.parse import urlparse
@@ -42,17 +43,28 @@ HTML. Include the authoritative HTTPS source URL for each section."""
             "Content-Type": "application/json",
         },
     )
-    try:
-        with urlopen(request, timeout=180) as response:
-            result = json.load(response)
-    except HTTPError as error:
-        hints = {
-            400: "Confira se a chave está ativa no Google AI Studio.",
-            403: "Confira as permissões da chave no projeto Gemini.",
-            404: "O modelo Gemini 3.1 Flash-Lite não está disponível para este projeto.",
-            429: "A cota do projeto foi atingida. Aguarde ou confira os limites no Google AI Studio.",
-        }
-        raise SystemExit(f"Gemini HTTP {error.code}. {hints.get(error.code, 'Confira o status da API Gemini.')}") from None
+    delays = (0, 5, 15)
+    for attempt, delay in enumerate(delays, start=1):
+        if delay:
+            time.sleep(delay)
+        try:
+            with urlopen(request, timeout=120) as response:
+                result = json.load(response)
+            break
+        except HTTPError as error:
+            status = error.code
+            error.close()
+            if status in (500, 502, 503, 504) and attempt < len(delays):
+                print(f"Gemini HTTP {status}. Nova tentativa em {delays[attempt]} s.", flush=True)
+                continue
+            hints = {
+                400: "Confira se a chave está ativa no Google AI Studio.",
+                403: "Confira as permissões da chave no projeto Gemini.",
+                404: "O modelo Gemini 3.1 Flash-Lite não está disponível para este projeto.",
+                429: "A cota do projeto foi atingida. Aguarde ou confira os limites no Google AI Studio.",
+            }
+            hint = hints.get(status, "Confira o status da API Gemini.")
+            raise SystemExit(f"Gemini HTTP {status} após {attempt} tentativa(s). {hint}") from None
 
     candidate = next(iter(result.get("candidates", [])), {})
     sources = candidate.get("urlContextMetadata", {}).get("urlMetadata", [])
