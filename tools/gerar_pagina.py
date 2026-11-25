@@ -32,21 +32,24 @@ endorsements and guarantees. Avoid marketing claims. If a fact is unavailable
 say so instead of guessing. Return only JSON with fields description (short
 summary), sections (array of objects with heading, body and source), and no
 HTML. Include the authoritative HTTPS source URL for each section."""
-    request = Request(
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent",
-        data=json.dumps({
-            "contents": [{"parts": [{"text": prompt}]}],
-            "tools": [{"url_context": {}}],
-        }).encode(),
-        headers={
-            "x-goog-api-key": os.environ["GEMINI_API_KEY"],
-            "Content-Type": "application/json",
-        },
-    )
-    delays = (0, 5, 15)
-    for attempt, delay in enumerate(delays, start=1):
+    payload = json.dumps({
+        "contents": [{"parts": [{"text": prompt}]}],
+        "tools": [{"url_context": {}}],
+    }).encode()
+    headers = {
+        "x-goog-api-key": os.environ["GEMINI_API_KEY"],
+        "Content-Type": "application/json",
+    }
+    primary = "gemini-3.1-flash-lite"
+    attempts = ((primary, 0), (primary, 5), ("gemini-3.5-flash-lite", 15))
+    for attempt, (model, delay) in enumerate(attempts, start=1):
         if delay:
             time.sleep(delay)
+        request = Request(
+            f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
+            data=payload,
+            headers=headers,
+        )
         try:
             with urlopen(request, timeout=120) as response:
                 result = json.load(response)
@@ -54,17 +57,18 @@ HTML. Include the authoritative HTTPS source URL for each section."""
         except HTTPError as error:
             status = error.code
             error.close()
-            if status in (500, 502, 503, 504) and attempt < len(delays):
-                print(f"Gemini HTTP {status}. Nova tentativa em {delays[attempt]} s.", flush=True)
+            if status in (500, 502, 503, 504) and attempt < len(attempts):
+                next_model, next_delay = attempts[attempt]
+                print(f"Gemini {model} HTTP {status}. Tentando {next_model} em {next_delay} s.", flush=True)
                 continue
             hints = {
                 400: "Confira se a chave está ativa no Google AI Studio.",
                 403: "Confira as permissões da chave no projeto Gemini.",
-                404: "O modelo Gemini 3.1 Flash-Lite não está disponível para este projeto.",
+                404: "O modelo Gemini não está disponível para este projeto.",
                 429: "A cota do projeto foi atingida. Aguarde ou confira os limites no Google AI Studio.",
             }
             hint = hints.get(status, "Confira o status da API Gemini.")
-            raise SystemExit(f"Gemini HTTP {status} após {attempt} tentativa(s). {hint}") from None
+            raise SystemExit(f"Gemini {model} HTTP {status} após {attempt} tentativa(s). {hint}") from None
 
     candidate = next(iter(result.get("candidates", [])), {})
     sources = candidate.get("urlContextMetadata", {}).get("urlMetadata", [])
