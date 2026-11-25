@@ -11,7 +11,7 @@ export default defineConfig({
   publicDir: false,
   plugins: [
     {
-      name: 'copy-static-presell-files',
+      name: 'copy-static-page-files',
       apply: 'build',
       closeBundle(error?: Error): void {
         if (error || !fs.existsSync(distDir)) {
