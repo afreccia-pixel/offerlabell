@@ -1,6 +1,6 @@
 /**
  * Configurações da campanha.
- * Para criar outra presell, copie esta pasta, renomeie-a,
+ * Para criar outra página, copie esta pasta, renomeie-a,
  * edite os valores abaixo e substitua as imagens em imagens/.
  */
 const CONFIG = {
