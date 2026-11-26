@@ -99,7 +99,7 @@ COPY = {
 }
 
 
-def render(product, affiliate, language, canonical, data, product_image=None):
+def render(product, affiliate, language, canonical, data, product_image=None, mobile_image=None):
     escape = html.escape
     guide, button, source_label = COPY[language]
     title = escape(f"{product} | {guide}")
@@ -115,6 +115,10 @@ def render(product, affiliate, language, canonical, data, product_image=None):
     product = escape(product)
     offer = escape(affiliate)
     photo = escape(product_image or "miniatura.png")
+    mobile_source = (
+        f'<source media="(max-width: 650px)" srcset="{escape(mobile_image)}">\n'
+        if mobile_image else ""
+    )
     details_link, summary = DETAILS[language]
     sections = []
     for item in data["sections"]:
@@ -145,7 +149,8 @@ def render(product, affiliate, language, canonical, data, product_image=None):
 body {{ margin: 0; background: #f5f2ec; color: #26372e; font: 1rem/1.65 system-ui, sans-serif; }}
 .hero {{ display: grid; justify-items: center; gap: clamp(1rem, 2.6vw, 2rem); padding: clamp(1.75rem, 5vw, 3.5rem) 1rem; background: radial-gradient(ellipse at 50% 65%, #fafff7 0%, #e4eee1 55%, #cbded1 100%); text-align: center; }}
 .hero h1 {{ margin: 0; max-width: 100%; overflow-wrap: anywhere; color: #173e30; font: 600 clamp(2.75rem, 7vw, 5rem)/1 Georgia, serif; letter-spacing: -.055em; }}
-.product-photo {{ display: block; width: min(100%, 32rem); height: clamp(9rem, 32svh, 16rem); object-fit: contain; filter: drop-shadow(0 .65rem .48rem #193e302e); }}
+.hero picture {{ display: block; width: min(100%, 32rem); }}
+.product-photo {{ display: block; width: 100%; height: clamp(9rem, 32svh, 16rem); object-fit: contain; filter: drop-shadow(0 .65rem .48rem #193e302e); }}
 .hero-action {{ width: min(100%, 22rem); }}
 .cta {{ display: flex; justify-content: center; align-items: center; gap: .75rem; min-height: 3.25rem; padding: .75rem 1.25rem; border-radius: .75rem; background: #1d523d; color: white; font-weight: 750; text-decoration: none; box-shadow: 0 .45rem 1rem #123d3429; }}
 .cta:hover {{ background: #133b2a; }}
@@ -167,7 +172,9 @@ a:focus-visible, summary:focus-visible {{ outline: 3px solid #9d6025; outline-of
 <main>
 <section class="hero" aria-labelledby="product">
 <h1 id="product">{product}</h1>
-<img class="product-photo" src="{photo}" alt="{product}" fetchpriority="high">
+<picture>
+{mobile_source}<img class="product-photo" src="{photo}" alt="{product}" fetchpriority="high">
+</picture>
 <div class="hero-action">
 <a class="cta" href="{offer}" rel="sponsored noopener">{button} <span aria-hidden="true">→</span></a>
 </div>
@@ -221,6 +228,19 @@ def pasted_photo(value):
         raise ValueError("Código de imagem inválido. Copie novamente na tela Gerar Página.") from None
 
 
+def form_data(value):
+    try:
+        if len(value.encode("utf-8")) > 60000:
+            raise ValueError
+        data = json.loads(value)
+        fields = tuple(data[key] for key in ("produto", "afiliado", "idioma", "computador", "celular"))
+        if not all(isinstance(field, str) for field in fields) or fields[2] not in COPY:
+            raise ValueError
+        return fields
+    except (KeyError, TypeError, ValueError):
+        raise ValueError("Dados da página inválidos. Copie novamente em https://offerlabell.com/gerar-pagina/.") from None
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("product")
@@ -230,26 +250,42 @@ def main():
     parser.add_argument("--product-image", type=https_url, help="URL HTTPS da foto do produto")
     parser.add_argument("--out", type=Path, default=Path("drafts"))
     args = parser.parse_args()
-    product = " ".join(args.product.split())
-    slug = re.sub(r"[^a-z0-9]+", "-", unicodedata.normalize("NFKD", product).encode("ascii", "ignore").decode().lower()).strip("-")
-    if not slug or len(product) > 100:
-        parser.error("Informe um nome de produto válido de até 100 caracteres.")
-    affiliate = https_url(args.affiliate)
+    try:
+        form = os.environ.get("DADOS_DA_PAGINA", "").strip()
+        if form:
+            product_name, affiliate_url, language, desktop, mobile = form_data(form)
+            desktop_photo = pasted_photo(desktop) if desktop else None
+            mobile_photo = pasted_photo(mobile) if mobile else None
+            legacy_photo = None
+        else:
+            product_name, affiliate_url, language = args.product, args.affiliate, args.language
+            image_code = os.environ.get("IMAGEM_COLADA", "").strip()
+            legacy_photo = pasted_photo(image_code) if image_code else None
+            desktop_photo = mobile_photo = None
+        product = " ".join(product_name.split())
+        slug = re.sub(r"[^a-z0-9]+", "-", unicodedata.normalize("NFKD", product).encode("ascii", "ignore").decode().lower()).strip("-")
+        if not slug or len(product) > 100:
+            raise ValueError("Informe um nome de produto válido de até 100 caracteres.")
+        affiliate = https_url(affiliate_url)
+    except ValueError as error:
+        parser.error(str(error))
     canonical = https_url(args.base_url).rstrip("/") + "/" + slug + "/"
     folder = args.out / slug
     if folder.exists():
         parser.error(f"A pasta {folder} já existe. Escolha outra pasta de saída.")
     if not os.environ.get("GEMINI_API_KEY"):
         parser.error("Configure GEMINI_API_KEY antes de executar.")
-    try:
-        encoded_photo = os.environ.get("IMAGEM_COLADA", "").strip()
-        photo = pasted_photo(encoded_photo) if encoded_photo else None
-    except ValueError as error:
-        parser.error(str(error))
-    data = research(product, affiliate, args.language)
-    page = render(product, affiliate, args.language, canonical, data, None if photo is not None else args.product_image)
+    data = research(product, affiliate, language)
+    desktop_path = "produto-computador.jpg" if desktop_photo is not None else None
+    mobile_path = "produto-celular.jpg" if mobile_photo is not None else None
+    product_image = desktop_path or mobile_path or (None if legacy_photo is not None else args.product_image)
+    page = render(product, affiliate, language, canonical, data, product_image, mobile_path if desktop_path else None)
     folder.mkdir(parents=True)
-    assets(folder, product, COPY[args.language][0], photo)
+    if desktop_path:
+        desktop_photo.save(folder / desktop_path, quality=90, optimize=True)
+    if mobile_path:
+        mobile_photo.save(folder / mobile_path, quality=90, optimize=True)
+    assets(folder, product, COPY[language][0], desktop_photo or mobile_photo or legacy_photo)
     (folder / "index.html").write_text(page, encoding="utf-8")
     print(f"Revise o rascunho em {folder / 'index.html'}.")
 

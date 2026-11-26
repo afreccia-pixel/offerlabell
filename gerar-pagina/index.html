@@ -9,85 +9,151 @@
   <style>
     * { box-sizing: border-box; }
     body { margin: 0; background: #f3f7f5; color: #173e30; font: 1rem/1.5 system-ui, sans-serif; }
-    main { width: min(38rem, calc(100% - 2rem)); margin: 3rem auto; }
-    textarea { display: block; width: 100%; min-height: 6rem; margin: .5rem 0 1rem; padding: .75rem; border: 2px dashed #487665; border-radius: .5rem; font: inherit; }
-    img { display: block; max-width: 100%; max-height: 18rem; margin-bottom: 1rem; border-radius: .5rem; }
-    img[hidden] { display: none; }
-    a, button { color: #13533d; font: inherit; font-weight: 650; }
-    button { padding: .65rem 1rem; cursor: pointer; }
-    button:disabled { cursor: default; opacity: .55; }
+    main { width: min(44rem, calc(100% - 2rem)); margin: clamp(1rem, 5vw, 3rem) auto; }
+    form { display: grid; gap: 1rem; padding: clamp(1rem, 4vw, 2rem); border: 1px solid #ccdcd3; border-radius: 1rem; background: white; }
+    label { display: block; font-weight: 650; }
+    input, select, textarea { display: block; width: 100%; margin-top: .3rem; padding: .65rem; font: inherit; color: inherit; border: 1px solid #709489; border-radius: .4rem; }
+    input[type="file"] { border-style: dashed; }
+    .images { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: 1rem; }
+    .images img { display: block; max-width: 100%; max-height: 11rem; margin-top: .65rem; }
+    [hidden], .images img[hidden] { display: none; }
+    button { justify-self: start; padding: .7rem 1rem; border: 0; border-radius: .45rem; background: #1d523d; color: white; font: inherit; font-weight: 700; cursor: pointer; }
+    button:disabled { opacity: .6; cursor: wait; }
+    a { color: #13533d; font-weight: 650; }
+    .hint, #status { margin: 0; }
   </style>
 </head>
 <body>
 <main>
   <h1>Gerar Página</h1>
-  <label for="photo">Imagem do produto</label>
-  <textarea id="photo" readonly placeholder="Clique aqui e cole a imagem com Ctrl+V ou ⌘V."></textarea>
-  <img id="preview" alt="Prévia da imagem colada" hidden>
-  <button id="copy" type="button" disabled>Copiar código da imagem</button>
-  <p id="status" role="status"></p>
-  <p>Em <a href="https://github.com/afreccia-pixel/offerlabell/actions/workflows/gerar-pagina.yml">Gerar Página no GitHub</a>, abra <strong>Run workflow</strong> e cole o código no campo <strong>imagem_colada</strong>.</p>
+  <form id="generator">
+    <label for="produto">Nome do produto
+      <input id="produto" name="produto" maxlength="100" required>
+    </label>
+    <label for="afiliado">Link do afiliado
+      <input id="afiliado" name="afiliado" type="url" maxlength="2000" placeholder="https://" required>
+    </label>
+    <label for="idioma">Idioma da página
+      <select id="idioma" name="idioma">
+        <option value="en">Inglês</option>
+        <option value="de">Alemão</option>
+        <option value="pt">Português</option>
+      </select>
+    </label>
+    <div class="images">
+      <div>
+        <label for="computador">Imagem JPG para computador</label>
+        <input id="computador" type="file" accept=".jpg,.jpeg,image/jpeg" aria-describedby="photos-hint">
+        <img id="computador-preview" alt="Prévia para computador" hidden>
+      </div>
+      <div>
+        <label for="celular">Imagem JPG para celular</label>
+        <input id="celular" type="file" accept=".jpg,.jpeg,image/jpeg" aria-describedby="photos-hint">
+        <img id="celular-preview" alt="Prévia para celular" hidden>
+      </div>
+    </div>
+    <p class="hint" id="photos-hint">Anexe os JPGs ou selecione o campo correspondente e cole uma imagem com Ctrl+V. Se enviar só uma foto, ela será usada nas duas telas.</p>
+    <button id="copy" type="submit">Copiar dados da página</button>
+    <label id="manual" for="code" hidden>Dados para copiar manualmente
+      <textarea id="code" readonly rows="3"></textarea>
+    </label>
+    <p id="status" role="status"></p>
+  </form>
+  <p>Abra <a href="https://github.com/afreccia-pixel/offerlabell/actions/workflows/gerar-pagina.yml">Gerar Página no GitHub</a>, clique em <strong>Run workflow</strong> e cole os dados no campo <strong>dados_da_pagina</strong>.</p>
 </main>
 <script type="module">
-  const field = document.querySelector('#photo');
-  const preview = document.querySelector('#preview');
-  const copy = document.querySelector('#copy');
+  const form = document.querySelector('#generator');
+  const button = document.querySelector('#copy');
   const status = document.querySelector('#status');
-  let pending = 0;
+  const manual = document.querySelector('#manual');
+  const output = document.querySelector('#code');
+  const pasted = {};
 
-  field.addEventListener('paste', async (event) => {
+  for (const id of ['computador', 'celular']) {
+    const input = document.querySelector('#' + id);
+    const preview = document.querySelector('#' + id + '-preview');
+    let previewUrl;
+    function show(file) {
+      URL.revokeObjectURL(previewUrl);
+      preview.hidden = !file;
+      if (file) {
+        previewUrl = URL.createObjectURL(file);
+        preview.src = previewUrl;
+      } else {
+        preview.removeAttribute('src');
+      }
+    }
+    input.addEventListener('change', () => {
+      delete pasted[id];
+      input.setCustomValidity('');
+      show(input.files[0]);
+    });
+    input.addEventListener('paste', (event) => {
+      const file = [...event.clipboardData.items].find(item => item.kind === 'file' && item.type.startsWith('image/'))?.getAsFile();
+      if (!file) return;
+      event.preventDefault();
+      input.value = '';
+      input.setCustomValidity('');
+      pasted[id] = file;
+      show(file);
+    });
+  }
+
+  async function encode(file) {
+    if (!file) return '';
+    const bitmap = await createImageBitmap(file);
+    try {
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      for (const edge of [1200, 1000, 800, 640, 480, 320, 240]) {
+        const scale = Math.min(1, edge / Math.max(bitmap.width, bitmap.height));
+        canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+        canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+        context.fillStyle = '#fff';
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+        const code = canvas.toDataURL('image/jpeg', 0.8);
+        if (code.length <= 28000 && code.startsWith('data:image/jpeg;base64,')) return code;
+      }
+      throw new Error('Imagem excede o limite.');
+    } finally {
+      bitmap.close();
+    }
+  }
+
+  form.addEventListener('input', () => { manual.hidden = true; });
+  form.addEventListener('submit', async (event) => {
     event.preventDefault();
-    const file = [...event.clipboardData.items].find(item => item.kind === 'file' && item.type.startsWith('image/'))?.getAsFile();
-    if (!file) {
-      status.textContent = 'Copie a imagem ou a captura de tela e cole novamente.';
+    const name = form.elements.produto.value.trim();
+    const affiliate = new URL(form.elements.afiliado.value);
+    if (!name || affiliate.protocol !== 'https:' || affiliate.username || affiliate.password) {
+      status.textContent = 'Informe o nome do produto e um link válido que comece com HTTPS.';
       return;
     }
-    const attempt = ++pending;
-    copy.disabled = true;
-    field.value = '';
-    preview.hidden = true;
-    preview.removeAttribute('src');
-    status.textContent = 'Preparando imagem…';
+    manual.hidden = true;
+    button.disabled = true;
+    status.textContent = 'Preparando dados…';
     try {
-      const bitmap = await createImageBitmap(file);
+      const files = ['computador', 'celular'].map(id => pasted[id] || document.getElementById(id).files[0]);
+      const [computador, celular] = await Promise.all(files.map(encode));
+      const data = JSON.stringify({ produto: name, afiliado: affiliate.href, idioma: form.elements.idioma.value, computador, celular });
+      if (new TextEncoder().encode(data).length > 60000) {
+        status.textContent = 'Os dados excedem o limite. Tente um link de afiliado mais curto.';
+        return;
+      }
       try {
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
-        for (const edge of [1000, 800, 640, 480, 320, 240]) {
-          const scale = Math.min(1, edge / Math.max(bitmap.width, bitmap.height));
-          canvas.width = Math.max(1, Math.round(bitmap.width * scale));
-          canvas.height = Math.max(1, Math.round(bitmap.height * scale));
-          context.fillStyle = '#fff';
-          context.fillRect(0, 0, canvas.width, canvas.height);
-          context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-          const code = canvas.toDataURL('image/jpeg', 0.82);
-          if (code.length > 48000) continue;
-          if (!code.startsWith('data:image/jpeg;base64,')) break;
-          if (attempt !== pending) return;
-          field.value = code;
-          preview.src = code;
-          preview.hidden = false;
-          copy.disabled = false;
-          status.textContent = 'Imagem pronta. Copie o código para o GitHub.';
-          return;
-        }
-        throw new Error('Imagem excede o limite.');
-      } finally {
-        bitmap.close();
+        await navigator.clipboard.writeText(data);
+        status.textContent = 'Dados copiados. Cole no campo dados_da_pagina do GitHub.';
+      } catch {
+        output.value = data;
+        manual.hidden = false;
+        output.select();
+        status.textContent = 'Pressione Ctrl+C ou ⌘C para copiar os dados selecionados.';
       }
     } catch {
-      if (attempt === pending) status.textContent = 'Não foi possível preparar a imagem. Tente colar uma captura de tela.';
-    }
-  });
-
-  copy.addEventListener('click', async () => {
-    try {
-      await navigator.clipboard.writeText(field.value);
-      status.textContent = 'Código copiado. Cole no campo imagem_colada do GitHub.';
-    } catch {
-      field.focus();
-      field.select();
-      status.textContent = 'Código selecionado. Pressione Ctrl+C ou ⌘C para copiar.';
+      status.textContent = 'Não foi possível ler uma das imagens. Selecione um JPG válido e tente novamente.';
+    } finally {
+      button.disabled = false;
     }
   });
 </script>
