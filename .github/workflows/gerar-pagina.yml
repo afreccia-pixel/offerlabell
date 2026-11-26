@@ -11,6 +11,10 @@ on:
       imagem:
         description: URL HTTPS da foto do produto (opcional)
         required: false
+      imagem_colada:
+        description: Código da imagem. Cole a foto em https://offerlabell.com/gerar-pagina/ e copie o código (opcional).
+        type: string
+        required: false
       idioma:
         description: Idioma da página
         type: choice
@@ -37,6 +41,7 @@ jobs:
           PRODUTO: ${{ inputs.produto }}
           AFILIADO: ${{ inputs.afiliado }}
           IDIOMA: ${{ inputs.idioma }}
+          IMAGEM_COLADA: ${{ inputs.imagem_colada }}
           IMAGEM: ${{ inputs.imagem }}
         run: |
           args=(--language "$IDIOMA")

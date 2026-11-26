@@ -1,5 +1,8 @@
 """Generate a static affiliate landing page with verified source links."""
 import argparse
+import base64
+import binascii
+from io import BytesIO
 import html
 import json
 import os
@@ -11,7 +14,7 @@ from urllib.error import HTTPError
 from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageOps, UnidentifiedImageError
 
 
 def https_url(value):
@@ -102,6 +105,12 @@ def render(product, affiliate, language, canonical, data, product_image=None):
     title = escape(f"{product} | {guide}")
     description = escape(data["description"])
     image = escape(canonical + "miniatura.png")
+    image_schema = json.dumps({
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "url": canonical,
+        "primaryImageOfPage": canonical + "miniatura.png",
+    }).replace("<", "\\u003c")
     canonical = escape(canonical)
     product = escape(product)
     offer = escape(affiliate)
@@ -122,13 +131,15 @@ def render(product, affiliate, language, canonical, data, product_image=None):
 <title>{title}</title>
 <meta name="description" content="{description}">
 <link rel="canonical" href="{canonical}">
-<link rel="icon" href="favicon.png" type="image/png" sizes="96x96">
+<link rel="icon" href="/favicon.png" type="image/png" sizes="96x96">
 <meta property="og:type" content="website">
 <meta property="og:title" content="{title}">
 <meta property="og:description" content="{description}">
 <meta property="og:url" content="{canonical}">
 <meta property="og:image" content="{image}">
 <meta property="og:image:alt" content="{title}">
+<meta name="robots" content="max-image-preview:large">
+<script type="application/ld+json">{image_schema}</script>
 <style>
 * {{ box-sizing: border-box; }}
 body {{ margin: 0; background: #f5f2ec; color: #26372e; font: 1rem/1.65 system-ui, sans-serif; }}
@@ -175,7 +186,13 @@ a:focus-visible, summary:focus-visible {{ outline: 3px solid #9d6025; outline-of
 """
 
 
-def assets(folder, product, heading):
+def assets(folder, product, heading, photo=None):
+    if photo is not None:
+        cover = Image.new("RGB", (1200, 630), "#ffffff")
+        image = ImageOps.contain(photo, (1120, 570), Image.Resampling.LANCZOS)
+        cover.paste(image, ((1200 - image.width) // 2, (630 - image.height) // 2))
+        cover.save(folder / "miniatura.png", optimize=True)
+        return
     cover = Image.new("RGB", (1200, 630), "#103c3b")
     draw = ImageDraw.Draw(cover)
     draw.rounded_rectangle((42, 42, 1158, 588), radius=36, fill="#f3f7f5")
@@ -188,11 +205,20 @@ def assets(folder, product, heading):
     draw.text((100, 240), product, font=font, fill="#103c3b")
     draw.text((100, 355), heading, font=ImageFont.load_default(size=38), fill="#426b65")
     cover.save(folder / "miniatura.png", optimize=True)
-    icon = Image.new("RGB", (96, 96), "#103c3b")
-    icon_draw = ImageDraw.Draw(icon)
-    icon_draw.rounded_rectangle((23, 28, 73, 76), radius=9, fill="#f3f7f5")
-    icon_draw.arc((34, 16, 62, 47), 180, 360, fill="#f3f7f5", width=5)
-    icon.save(folder / "favicon.png", optimize=True)
+
+
+def pasted_photo(value):
+    prefix = "data:image/jpeg;base64,"
+    if not value.startswith(prefix) or len(value) > 48000:
+        raise ValueError("Cole o código da imagem gerado em https://offerlabell.com/gerar-pagina/.")
+    try:
+        raw = base64.b64decode(value[len(prefix):], validate=True)
+        with Image.open(BytesIO(raw), formats=["JPEG"]) as photo:
+            if max(photo.size) > 1200:
+                raise ValueError("A imagem excede 1200 pixels.")
+            return ImageOps.exif_transpose(photo).convert("RGB")
+    except (binascii.Error, UnidentifiedImageError, OSError, Image.DecompressionBombError):
+        raise ValueError("Código de imagem inválido. Copie novamente na tela Gerar Página.") from None
 
 
 def main():
@@ -200,7 +226,7 @@ def main():
     parser.add_argument("product")
     parser.add_argument("affiliate")
     parser.add_argument("--language", choices=COPY, default="en")
-    parser.add_argument("--base-url", default="https://afreccia-pixel.github.io/onlineshopping/")
+    parser.add_argument("--base-url", default="https://offerlabell.com/")
     parser.add_argument("--product-image", type=https_url, help="URL HTTPS da foto do produto")
     parser.add_argument("--out", type=Path, default=Path("drafts"))
     args = parser.parse_args()
@@ -215,10 +241,15 @@ def main():
         parser.error(f"A pasta {folder} já existe. Escolha outra pasta de saída.")
     if not os.environ.get("GEMINI_API_KEY"):
         parser.error("Configure GEMINI_API_KEY antes de executar.")
+    try:
+        encoded_photo = os.environ.get("IMAGEM_COLADA", "").strip()
+        photo = pasted_photo(encoded_photo) if encoded_photo else None
+    except ValueError as error:
+        parser.error(str(error))
     data = research(product, affiliate, args.language)
-    page = render(product, affiliate, args.language, canonical, data, args.product_image)
+    page = render(product, affiliate, args.language, canonical, data, None if photo is not None else args.product_image)
     folder.mkdir(parents=True)
-    assets(folder, product, COPY[args.language][0])
+    assets(folder, product, COPY[args.language][0], photo)
     (folder / "index.html").write_text(page, encoding="utf-8")
     print(f"Revise o rascunho em {folder / 'index.html'}.")
 

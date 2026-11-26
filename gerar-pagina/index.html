@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="/favicon.png" type="image/png" sizes="96x96">
+  <title>Gerar Página | OfferLabell</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f3f7f5; color: #173e30; font: 1rem/1.5 system-ui, sans-serif; }
+    main { width: min(38rem, calc(100% - 2rem)); margin: 3rem auto; }
+    textarea { display: block; width: 100%; min-height: 6rem; margin: .5rem 0 1rem; padding: .75rem; border: 2px dashed #487665; border-radius: .5rem; font: inherit; }
+    img { display: block; max-width: 100%; max-height: 18rem; margin-bottom: 1rem; border-radius: .5rem; }
+    img[hidden] { display: none; }
+    a, button { color: #13533d; font: inherit; font-weight: 650; }
+    button { padding: .65rem 1rem; cursor: pointer; }
+    button:disabled { cursor: default; opacity: .55; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Gerar Página</h1>
+  <label for="photo">Imagem do produto</label>
+  <textarea id="photo" readonly placeholder="Clique aqui e cole a imagem com Ctrl+V ou ⌘V."></textarea>
+  <img id="preview" alt="Prévia da imagem colada" hidden>
+  <button id="copy" type="button" disabled>Copiar código da imagem</button>
+  <p id="status" role="status"></p>
+  <p>Em <a href="https://github.com/afreccia-pixel/offerlabell/actions/workflows/gerar-pagina.yml">Gerar Página no GitHub</a>, abra <strong>Run workflow</strong> e cole o código no campo <strong>imagem_colada</strong>.</p>
+</main>
+<script type="module">
+  const field = document.querySelector('#photo');
+  const preview = document.querySelector('#preview');
+  const copy = document.querySelector('#copy');
+  const status = document.querySelector('#status');
+  let pending = 0;
+
+  field.addEventListener('paste', async (event) => {
+    event.preventDefault();
+    const file = [...event.clipboardData.items].find(item => item.kind === 'file' && item.type.startsWith('image/'))?.getAsFile();
+    if (!file) {
+      status.textContent = 'Copie a imagem ou a captura de tela e cole novamente.';
+      return;
+    }
+    const attempt = ++pending;
+    copy.disabled = true;
+    field.value = '';
+    preview.hidden = true;
+    preview.removeAttribute('src');
+    status.textContent = 'Preparando imagem…';
+    try {
+      const bitmap = await createImageBitmap(file);
+      try {
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        for (const edge of [1000, 800, 640, 480, 320, 240]) {
+          const scale = Math.min(1, edge / Math.max(bitmap.width, bitmap.height));
+          canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+          canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+          context.fillStyle = '#fff';
+          context.fillRect(0, 0, canvas.width, canvas.height);
+          context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+          const code = canvas.toDataURL('image/jpeg', 0.82);
+          if (code.length > 48000) continue;
+          if (!code.startsWith('data:image/jpeg;base64,')) break;
+          if (attempt !== pending) return;
+          field.value = code;
+          preview.src = code;
+          preview.hidden = false;
+          copy.disabled = false;
+          status.textContent = 'Imagem pronta. Copie o código para o GitHub.';
+          return;
+        }
+        throw new Error('Imagem excede o limite.');
+      } finally {
+        bitmap.close();
+      }
+    } catch {
+      if (attempt === pending) status.textContent = 'Não foi possível preparar a imagem. Tente colar uma captura de tela.';
+    }
+  });
+
+  copy.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(field.value);
+      status.textContent = 'Código copiado. Cole no campo imagem_colada do GitHub.';
+    } catch {
+      field.focus();
+      field.select();
+      status.textContent = 'Código selecionado. Pressione Ctrl+C ou ⌘C para copiar.';
+    }
+  });
+</script>
+</body>
+</html>
