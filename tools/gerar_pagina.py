@@ -99,17 +99,17 @@ COPY = {
 }
 
 
-def render(product, affiliate, language, canonical, data, product_image=None, mobile_image=None):
+def render(product, affiliate, language, canonical, data, product_image=None, mobile_image=None, thumbnail="miniatura.png"):
     escape = html.escape
     guide, button, source_label = COPY[language]
     title = escape(f"{product} | {guide}")
     description = escape(data["description"])
-    image = escape(canonical + "miniatura.png")
+    image = escape(canonical + thumbnail)
     image_schema = json.dumps({
         "@context": "https://schema.org",
         "@type": "WebPage",
         "url": canonical,
-        "primaryImageOfPage": canonical + "miniatura.png",
+        "primaryImageOfPage": canonical + thumbnail,
     }).replace("<", "\\u003c")
     canonical = escape(canonical)
     product = escape(product)
@@ -118,6 +118,10 @@ def render(product, affiliate, language, canonical, data, product_image=None, mo
     mobile_source = (
         f'<source media="(max-width: 650px)" srcset="{escape(mobile_image)}">\n'
         if mobile_image else ""
+    )
+    thumbnail_markup = (
+        f'<img class="offer-thumbnail" src="{escape(thumbnail)}" alt="{product}" loading="lazy">'
+        if thumbnail != "miniatura.png" else ""
     )
     details_link, summary = DETAILS[language]
     sections = []
@@ -156,6 +160,7 @@ body {{ margin: 0; background: #f5f2ec; color: #26372e; font: 1rem/1.65 system-u
 .cta:hover {{ background: #133b2a; }}
 a:focus-visible, summary:focus-visible {{ outline: 3px solid #9d6025; outline-offset: 4px; }}
 .shell {{ width: min(46rem, calc(100% - 2rem)); margin: clamp(1rem, 4vw, 2.25rem) auto; padding: clamp(1.15rem, 4vw, 2rem); background: #fff; border: 1px solid #e4e8df; border-radius: 1rem; }}
+.offer-thumbnail {{ display: block; width: min(100%, 18rem); height: auto; margin-bottom: 1rem; }}
 .purchase-details a {{ color: #205640; text-underline-offset: .2em; }}
 .purchase-details > a {{ font-size: 1.15rem; font-weight: 750; }}
 .purchase-details p {{ margin: .5rem 0; }}
@@ -180,6 +185,7 @@ a:focus-visible, summary:focus-visible {{ outline: 3px solid #9d6025; outline-of
 </div>
 </section>
 <div class="shell purchase-details">
+{thumbnail_markup}
 <a href="{offer}" rel="sponsored noopener">{details_link} <span aria-hidden="true">↗</span></a>
 <p>{description}</p>
 <details><summary>{summary}</summary>
@@ -233,8 +239,15 @@ def form_data(value):
         if len(value.encode("utf-8")) > 60000:
             raise ValueError
         data = json.loads(value)
-        fields = tuple(data[key] for key in ("produto", "afiliado", "idioma", "computador", "celular"))
-        if not all(isinstance(field, str) for field in fields) or fields[2] not in COPY:
+        fields = tuple(data[key] for key in ("produto", "afiliado", "idioma"))
+        if "tela" in data or "imagem_produto" in data:
+            images = (data["tela"], data["imagem_produto"])
+            if not all(images):
+                raise ValueError
+            fields += (*images, True)
+        else:
+            fields += (data["computador"], data["celular"], False)
+        if not all(isinstance(field, str) for field in fields[:5]) or fields[2] not in COPY:
             raise ValueError
         return fields
     except (KeyError, TypeError, ValueError):
@@ -251,9 +264,10 @@ def main():
     parser.add_argument("--out", type=Path, default=Path("drafts"))
     args = parser.parse_args()
     try:
+        separate_thumbnail = False
         form = os.environ.get("DADOS_DA_PAGINA", "").strip()
         if form:
-            product_name, affiliate_url, language, desktop, mobile = form_data(form)
+            product_name, affiliate_url, language, desktop, mobile, separate_thumbnail = form_data(form)
             desktop_photo = pasted_photo(desktop) if desktop else None
             mobile_photo = pasted_photo(mobile) if mobile else None
             legacy_photo = None
@@ -276,16 +290,20 @@ def main():
     if not os.environ.get("GEMINI_API_KEY"):
         parser.error("Configure GEMINI_API_KEY antes de executar.")
     data = research(product, affiliate, language)
-    desktop_path = "produto-computador.jpg" if desktop_photo is not None else None
-    mobile_path = "produto-celular.jpg" if mobile_photo is not None else None
+    desktop_path = ("imagem-tela.jpg" if separate_thumbnail else "produto-computador.jpg") if desktop_photo is not None else None
+    thumbnail = f"{slug}.jpg" if separate_thumbnail else "miniatura.png"
+    mobile_path = "produto-celular.jpg" if mobile_photo is not None and not separate_thumbnail else None
     product_image = desktop_path or mobile_path or (None if legacy_photo is not None else args.product_image)
-    page = render(product, affiliate, language, canonical, data, product_image, mobile_path if desktop_path else None)
+    page = render(product, affiliate, language, canonical, data, product_image, mobile_path if desktop_path else None, thumbnail)
     folder.mkdir(parents=True)
     if desktop_path:
         desktop_photo.save(folder / desktop_path, quality=90, optimize=True)
     if mobile_path:
         mobile_photo.save(folder / mobile_path, quality=90, optimize=True)
-    assets(folder, product, COPY[language][0], desktop_photo or mobile_photo or legacy_photo)
+    if separate_thumbnail:
+        mobile_photo.save(folder / thumbnail, quality=90, optimize=True)
+    else:
+        assets(folder, product, COPY[language][0], desktop_photo or mobile_photo or legacy_photo)
     (folder / "index.html").write_text(page, encoding="utf-8")
     print(f"Revise o rascunho em {folder / 'index.html'}.")
 
