@@ -42,17 +42,18 @@
     </label>
     <div class="images">
       <div>
-        <label for="computador">Imagem JPG para computador</label>
-        <input id="computador" type="file" accept=".jpg,.jpeg,image/jpeg" aria-describedby="photos-hint">
-        <img id="computador-preview" alt="Prévia para computador" hidden>
+        <label for="tela">Imagem tela</label>
+        <input id="tela" type="file" accept=".jpg,.jpeg,image/jpeg" required>
+        <small>JPG para a tela principal da página.</small>
+        <img id="tela-preview" alt="Prévia da imagem da tela" hidden>
       </div>
       <div>
-        <label for="celular">Imagem JPG para celular</label>
-        <input id="celular" type="file" accept=".jpg,.jpeg,image/jpeg" aria-describedby="photos-hint">
-        <img id="celular-preview" alt="Prévia para celular" hidden>
+        <label for="imagem_produto">Imagem produto</label>
+        <input id="imagem_produto" type="file" accept=".jpg,.jpeg,image/jpeg" required>
+        <small>JPG do produto com o nome visível, para a miniatura da busca.</small>
+        <img id="imagem_produto-preview" alt="Prévia da imagem do produto" hidden>
       </div>
     </div>
-    <p class="hint" id="photos-hint">Anexe os JPGs ou selecione o campo correspondente e cole uma imagem com Ctrl+V. Se enviar só uma foto, ela será usada nas duas telas.</p>
     <button id="copy" type="submit">Copiar dados da página</button>
     <label id="manual" for="code" hidden>Dados para copiar manualmente
       <textarea id="code" readonly rows="3"></textarea>
@@ -67,9 +68,8 @@
   const status = document.querySelector('#status');
   const manual = document.querySelector('#manual');
   const output = document.querySelector('#code');
-  const pasted = {};
 
-  for (const id of ['computador', 'celular']) {
+  for (const id of ['tela', 'imagem_produto']) {
     const input = document.querySelector('#' + id);
     const preview = document.querySelector('#' + id + '-preview');
     let previewUrl;
@@ -83,24 +83,14 @@
         preview.removeAttribute('src');
       }
     }
-    input.addEventListener('change', () => {
-      delete pasted[id];
-      input.setCustomValidity('');
-      show(input.files[0]);
-    });
-    input.addEventListener('paste', (event) => {
-      const file = [...event.clipboardData.items].find(item => item.kind === 'file' && item.type.startsWith('image/'))?.getAsFile();
-      if (!file) return;
-      event.preventDefault();
-      input.value = '';
-      input.setCustomValidity('');
-      pasted[id] = file;
-      show(file);
-    });
+    input.addEventListener('change', () => show(input.files[0]));
   }
 
   async function encode(file) {
-    if (!file) return '';
+    const signature = new Uint8Array(await file.slice(0, 3).arrayBuffer());
+    if (!/\.jpe?g$/i.test(file.name) || signature[0] !== 255 || signature[1] !== 216 || signature[2] !== 255) {
+      throw new Error('Selecione um arquivo JPG válido.');
+    }
     const bitmap = await createImageBitmap(file);
     try {
       const canvas = document.createElement('canvas');
@@ -134,9 +124,9 @@
     button.disabled = true;
     status.textContent = 'Preparando dados…';
     try {
-      const files = ['computador', 'celular'].map(id => pasted[id] || document.getElementById(id).files[0]);
-      const [computador, celular] = await Promise.all(files.map(encode));
-      const data = JSON.stringify({ produto: name, afiliado: affiliate.href, idioma: form.elements.idioma.value, computador, celular });
+      const files = ['tela', 'imagem_produto'].map(id => document.getElementById(id).files[0]);
+      const [tela, imagem_produto] = await Promise.all(files.map(encode));
+      const data = JSON.stringify({ produto: name, afiliado: affiliate.href, idioma: form.elements.idioma.value, tela, imagem_produto });
       if (new TextEncoder().encode(data).length > 60000) {
         status.textContent = 'Os dados excedem o limite. Tente um link de afiliado mais curto.';
         return;
