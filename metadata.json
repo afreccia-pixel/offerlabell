@@ -1,6 +1,0 @@
-{
-  "name": "Página Ketosana",
-  "description": "Página estática, rápida e responsiva para Ketosana com configuração centralizada e rastreamento Google Ads.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
