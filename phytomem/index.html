@@ -23,7 +23,9 @@ body { margin: 0; background: #f5f2ec; color: #26372e; font: 1rem/1.65 system-ui
   min-height: 100vh;
   min-height: 100svh;
   padding: 1.25rem;
-  background: #e4eee1 url("Phytomem_tela.png") center / cover no-repeat;
+  background:
+    linear-gradient(180deg, rgb(10 26 19 / 40%), rgb(10 26 19 / 54%) 52%, rgb(10 26 19 / 76%)),
+    #182b22 url("Phytomem_tela.png") center / cover no-repeat;
 }
 .hero-copy {
   width: min(100%, 39rem);
@@ -36,15 +38,10 @@ body { margin: 0; background: #f5f2ec; color: #26372e; font: 1rem/1.65 system-ui
 }
 .hero h1 { margin: 0 0 1rem; color: #173e30; font: 600 clamp(3rem, 6vw, 5.5rem)/.98 Georgia, serif; letter-spacing: -.055em; overflow-wrap: anywhere; }
 .hero-intro { max-width: 29rem; margin: 0 auto 1.5rem; color: #36473e; font-size: clamp(1rem, 1.5vw, 1.125rem); }
-.product-visual { display: grid; place-items: center; margin: 0; padding: clamp(1.5rem, 4vw, 3rem) 1rem; }
-.product-photo { display: block; width: min(100%, 21rem); height: auto; border-radius: .85rem; box-shadow: 0 .8rem 2rem rgb(25 62 48 / 15%); }
 .hero-action { width: min(100%, 19rem); margin-inline: auto; }
 .cta { display: flex; justify-content: center; align-items: center; gap: .75rem; min-height: 3.25rem; padding: .75rem 1.25rem; border-radius: .75rem; background: #1d523d; color: white; font-weight: 750; text-decoration: none; box-shadow: 0 .45rem 1rem #123d3429; }
 .cta:hover { background: #133b2a; }
 a:focus-visible { outline: 3px solid #9d6025; outline-offset: 4px; }
-@media (max-width: 650px) {
-  .product-photo { width: min(100%, 16rem); }
-}
 </style>
 <!-- GOOGLE ADS: cole aqui a tag base, se ainda nao estiver instalada nesta pagina. -->
 </head>
@@ -59,9 +56,6 @@ a:focus-visible { outline: 3px solid #9d6025; outline-offset: 4px; }
 </div>
 </div>
 </section>
-<figure class="product-visual">
-<img class="product-photo" src="Phytomem.png" alt="PhytoMem One supplement bottle" loading="lazy">
-</figure>
 </main>
 <!-- GOOGLE ADS: cole aqui o snippet de conversao por clique e associe aos links da oferta usando o rotulo deste produto. -->
 </body>
